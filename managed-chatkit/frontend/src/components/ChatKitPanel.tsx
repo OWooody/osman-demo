@@ -63,11 +63,30 @@ export function ChatKitPanel() {
         greeting: "",
         prompts: [
           {
-            icon: "circle-question",
-            label: "What is ChatKit?",
-            prompt: "What is ChatKit?",
+            icon: "document",
+            label: "Create an invoice for a client",
+            prompt: "Create an invoice for a client",
           },
-          // ...and 4 more prompts
+          {
+            icon: "check-circle",
+            label: "Reconcile my bank account",
+            prompt: "Reconcile my bank account",
+          },
+          {
+            icon: "notebook",
+            label: "Categorize my business expenses",
+            prompt: "Categorize my business expenses",
+          },
+          {
+            icon: "calendar",
+            label: "Track my bills and due dates",
+            prompt: "Track my bills and due dates",
+          },
+          {
+            icon: "chart",
+            label: "Generate a profit and loss report",
+            prompt: "Generate a profit and loss report",
+          },
         ],
       },
       // Optional fields not shown: locale, initialThread, threadItemActions, header, onClientTool, entities, widgets
