@@ -1,8 +1,7 @@
-# OpenAI ChatKit Starter Templates
+# Managed ChatKit Starter
 
-This repository contains two starter apps as reference implementations of minimal ChatKit integrations.
+This repository contains a starter app as a reference implementation of a managed ChatKit integration with hosted workflows.
 
-You can run the following examples:
+You can run the following example:
 
-- [**ChatKit**](chatkit) - example of a self-hosted ChatKit integration.
 - [**Managed ChatKit**](managed-chatkit) – example of a managed ChatKit integration with hosted workflows.
