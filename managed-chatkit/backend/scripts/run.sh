@@ -11,10 +11,20 @@ cd "$PROJECT_ROOT"
 
 if [ ! -d ".venv" ]; then
   echo "Creating virtual env in $PROJECT_ROOT/.venv ..."
-  python3 -m venv .venv
+  # Try python3.11 first, fallback to python3.13, then python3
+  if command -v python3.11 &> /dev/null; then
+    python3.11 -m venv .venv
+  elif command -v python3.13 &> /dev/null; then
+    python3.13 -m venv .venv
+  else
+    python3 -m venv .venv
+  fi
 fi
 
 source .venv/bin/activate
+
+echo "Upgrading pip ..."
+pip install --upgrade pip >/dev/null
 
 echo "Installing backend deps (editable) ..."
 pip install -e . >/dev/null
