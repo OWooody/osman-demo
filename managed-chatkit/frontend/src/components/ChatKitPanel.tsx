@@ -59,6 +59,14 @@ export function ChatKitPanel() {
             icon: "book-open",
             pinned: false,
           },
+          {
+            id: "generate_report",
+            label: "Generate report",
+            shortLabel: "Report",
+            placeholderOverride: "Generate profit and loss report",
+            icon: "chart",
+            pinned: false,
+          },
         ],
       },
       startScreen: {
@@ -90,6 +98,22 @@ export function ChatKitPanel() {
             prompt: "Generate a profit and loss report",
           },
         ],
+      },
+      onClientTool: async (toolCall) => {
+        console.log("🔧 Tool called from workflow:", toolCall);
+        console.log("Tool name:", toolCall.name);
+        console.log("Tool arguments:", toolCall.arguments);
+        
+        if (toolCall.name === "generate_report") {
+          console.log("📊 generate_report tool called with:", toolCall);
+        }
+        
+        // Return a result for the tool call
+        // You can return any data structure here
+        return {
+          success: true,
+          message: `Tool ${toolCall.name} executed successfully`,
+        };
       },
       widgets: {
         async onAction(action, widgetItem) {
@@ -157,6 +181,7 @@ export function ChatKitPanel() {
 
   const chatkit = useChatKit(options);
   chatkitRef.current = chatkit;
+
 
   return (
     <div className="flex h-[90vh] w-full rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
