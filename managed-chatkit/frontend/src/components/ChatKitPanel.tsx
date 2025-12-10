@@ -273,7 +273,7 @@ export function ChatKitPanel() {
       </div>
       
       {/* Right Panel - White Panel */}
-      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+      <div className="flex-1 bg-white shadow-sm transition-colors p-6 overflow-visible" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           console.log("=== RENDERING RIGHT PANEL ===");
           console.log("invoiceData:", invoiceData);
@@ -284,96 +284,99 @@ export function ChatKitPanel() {
         })()}
         {invoiceData ? (
           <div className="h-full flex flex-col overflow-y-auto">
-            {/* Invoice Header */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Invoice Created</h2>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <span className="text-sm text-gray-600">Invoice has been successfully created</span>
-              </div>
-            </div>
-
-            {/* Invoice Details */}
-            <div className="flex-1 border border-gray-200 rounded-lg p-6 bg-gray-50">
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoice Details</h3>
-                
-                {/* Invoice Number */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-600">Invoice Number:</span>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    {invoiceData.invoiceNumber || 'INV-2025-001'}
-                  </span>
-                </div>
-
-                {/* Client Information */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-600">Client:</span>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    {invoiceData.client || invoiceData.clientName || 'Acme Corporation'}
-                  </span>
-                </div>
-
-                {/* Date */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-600">Date:</span>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    {invoiceData.date || invoiceData.invoiceDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
-                </div>
-
-                {/* Due Date */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-600">Due Date:</span>
-                  <span className="ml-2 text-sm font-medium text-gray-900">
-                    {invoiceData.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
-                </div>
-
-                {/* Line Items */}
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <span className="text-sm font-semibold text-gray-900 block mb-3">Line Items:</span>
-                  <div className="space-y-3">
-                    {(invoiceData.items || invoiceData.lineItems || [
-                      { description: 'Web Development Services', quantity: 40, rate: 250, amount: 10000 },
-                      { description: 'UI/UX Design', quantity: 20, rate: 125, amount: 2500 }
-                    ]).map((item: any, index: number) => (
-                      <div key={index} className="flex justify-between items-start pb-2 border-b border-gray-100 last:border-0">
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">{item.description || item.name}</div>
-                          {item.quantity && item.rate && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              {item.quantity} × {item.currency || 'SAR'} {item.rate.toLocaleString()}
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {item.currency || 'SAR'} {(item.amount || item.price || 0).toLocaleString()}
-                        </div>
+            {/* Invoice Details - Realistic Invoice Design */}
+            <div className="invoice-container flex-1 p-8 bg-white my-4">
+              <div className="max-w-2xl mx-auto">
+                {/* Invoice Header Section */}
+                <div className="mb-8 pb-6 border-b-2 border-gray-300">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h1 className="text-3xl font-bold text-gray-900 mb-2">INVOICE</h1>
+                      <div className="text-sm text-gray-600">
+                        <div>Invoice Number: <span className="font-semibold text-gray-900">{invoiceData.invoiceNumber || 'INV-2025-001'}</span></div>
                       </div>
-                    ))}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600 mb-1">Date:</div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        {invoiceData.date || invoiceData.invoiceDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-8">
+                    <div>
+                      <div className="text-xs uppercase text-gray-500 mb-2">Bill From</div>
+                      <div className="text-sm text-gray-900 font-semibold">Your Company Name</div>
+                      <div className="text-sm text-gray-600">123 Business Street</div>
+                      <div className="text-sm text-gray-600">City, State 12345</div>
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase text-gray-500 mb-2">Bill To</div>
+                      <div className="text-sm text-gray-900 font-semibold">{invoiceData.client || invoiceData.clientName || 'Acme Corporation'}</div>
+                      <div className="text-sm text-gray-600">Client Address</div>
+                      <div className="text-sm text-gray-600">City, State ZIP</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Line Items Table */}
+                <div className="mb-8">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b-2 border-gray-300">
+                        <th className="text-left py-3 px-4 text-xs uppercase text-gray-600 font-semibold">Description</th>
+                        <th className="text-center py-3 px-4 text-xs uppercase text-gray-600 font-semibold">Quantity</th>
+                        <th className="text-right py-3 px-4 text-xs uppercase text-gray-600 font-semibold">Rate</th>
+                        <th className="text-right py-3 px-4 text-xs uppercase text-gray-600 font-semibold">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(invoiceData.items || invoiceData.lineItems || [
+                        { description: 'Web Development Services', quantity: 40, rate: 250, amount: 10000 },
+                        { description: 'UI/UX Design', quantity: 20, rate: 125, amount: 2500 }
+                      ]).map((item: any, index: number) => (
+                        <tr key={index} className="border-b border-gray-200">
+                          <td className="py-4 px-4 text-sm text-gray-900">{item.description || item.name}</td>
+                          <td className="py-4 px-4 text-sm text-gray-600 text-center">{item.quantity || '-'}</td>
+                          <td className="py-4 px-4 text-sm text-gray-600 text-right">{item.currency || 'SAR'} {(item.rate || 0).toLocaleString()}</td>
+                          <td className="py-4 px-4 text-sm font-semibold text-gray-900 text-right">{item.currency || 'SAR'} {(item.amount || item.price || 0).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Totals Section */}
+                <div className="flex justify-end mb-8">
+                  <div className="w-64">
+                    <div className="flex justify-between py-2 text-sm text-gray-600">
+                      <span>Subtotal:</span>
+                      <span>{invoiceData.currency || 'SAR'} {((invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500) * 0.95).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2 text-sm text-gray-600">
+                      <span>Tax (5%):</span>
+                      <span>{invoiceData.currency || 'SAR'} {((invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500) * 0.05).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-t-2 border-gray-300 mt-2">
+                      <span className="text-lg font-bold text-gray-900">Total:</span>
+                      <span className="text-2xl font-bold text-[#8000ff]">
+                        {invoiceData.currency || 'SAR'} {(invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Total Amount */}
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-semibold text-gray-900">Total Amount:</span>
-                    <span className="text-2xl font-bold text-[#8000ff]">
-                      {invoiceData.currency || 'SAR'} {(invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500).toLocaleString()}
-                    </span>
+                {/* Payment Terms */}
+                <div className="pt-6 border-t border-gray-200">
+                  <div className="text-xs text-gray-500 mb-2">Payment Terms:</div>
+                  <div className="text-sm text-gray-700">
+                    Payment due by: <span className="font-semibold">{invoiceData.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-4">
+                    Thank you for your business!
                   </div>
                 </div>
-
-                {/* Show raw data if available for debugging */}
-                {process.env.NODE_ENV === 'development' && (
-                  <details className="mt-6 pt-4 border-t border-gray-200">
-                    <summary className="text-xs text-gray-500 cursor-pointer mb-2">Debug: View raw data</summary>
-                    <pre className="text-xs bg-white p-3 rounded border border-gray-200 overflow-auto">
-                      {JSON.stringify(invoiceData, null, 2)}
-                    </pre>
-                  </details>
-                )}
               </div>
             </div>
           </div>
