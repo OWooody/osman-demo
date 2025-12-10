@@ -1,15 +1,45 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export function ChatKitPanel() {
+  const [showReport, setShowReport] = useState(false);
+
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
     []
   );
 
   const chatkitRef = useRef<ReturnType<typeof useChatKit> | null>(null);
+
+  // Profit and Loss data - matching the design
+  const profitLossData = [
+    { month: "Jan", profit: 18000 },
+    { month: "Feb", profit: 21000 },
+    { month: "Mar", profit: 19500 },
+    { month: "Apr", profit: 23000 },
+    { month: "May", profit: 25000 },
+    { month: "Jun", profit: 24000 },
+    { month: "Jul", profit: 26000 },
+    { month: "Aug", profit: 24500 },
+    { month: "Sep", profit: 27000 },
+    { month: "Oct", profit: 26100 },
+    { month: "Nov", profit: 27500 },
+    { month: "Dec", profit: 28300 },
+  ];
+
+  // Current month data
+  const currentMonth = profitLossData[profitLossData.length - 1];
+  const previousMonth = profitLossData[profitLossData.length - 2];
+  const currentProfit = currentMonth.profit;
+  const previousProfit = previousMonth.profit;
+  const profitChange = ((currentProfit - previousProfit) / previousProfit) * 100;
+  
+  // Revenue and Expenses for footer
+  const currentRevenue = 124500;
+  const currentExpenses = 96200;
 
   const options: ChatKitOptions = useMemo(
     () => ({
@@ -106,6 +136,7 @@ export function ChatKitPanel() {
         
         if (toolCall.name === "generate_report") {
           console.log("📊 generate_report tool called with:", toolCall);
+          setShowReport(true);
         }
         
         // Return a result for the tool call
@@ -191,8 +222,82 @@ export function ChatKitPanel() {
       </div>
       
       {/* Right Panel - White Panel */}
-      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors">
-        {/* Add your content here */}
+      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible">
+        {showReport ? (
+          <div className="h-full flex flex-col">
+            {/* Header Section */}
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Profit & Loss</h2>
+                <div className="text-4xl font-semibold text-[#8000ff] mb-1">
+                  {currentProfit.toLocaleString()}
+                </div>
+                <div className="text-sm font-medium text-[#8000ff]">
+                  {profitChange >= 0 ? '+' : ''}{profitChange.toFixed(1)}% vs {previousMonth.month} 2025
+                </div>
+              </div>
+              <div className="px-3 py-1.5 rounded-full bg-gray-100 text-sm text-gray-700">
+                Dec 2025
+              </div>
+            </div>
+
+            {/* Chart Section */}
+            <div className="flex-1 min-h-0 mb-6 -mx-6 relative" style={{ left: '-1.5rem', right: '-1.5rem', width: 'calc(100% + 3rem)' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={profitLossData}
+                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#8000ff" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#8000ff" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={true} vertical={false} />
+                  <XAxis 
+                    dataKey="month" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={false}
+                  />
+                  <YAxis 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="profit"
+                    stroke="#8000ff"
+                    strokeWidth={2.5}
+                    fill="url(#profitGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Footer Section */}
+            <div className="border-t border-gray-100 pt-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-700">Revenue</span>
+                <span className="text-sm font-medium text-gray-900">
+                  SAR {currentRevenue.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-700">Expenses</span>
+                <span className="text-sm font-medium text-gray-900">
+                  SAR {currentExpenses.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="h-full flex items-center justify-center text-gray-400">
+            <p className="text-lg">Generate a report to view profit & loss data</p>
+          </div>
+        )}
       </div>
     </div>
   );
