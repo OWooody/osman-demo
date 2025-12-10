@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
@@ -8,6 +8,8 @@ export function ChatKitPanel() {
     () => createClientSecretFetcher(workflowId),
     []
   );
+
+  const chatkitRef = useRef<ReturnType<typeof useChatKit> | null>(null);
 
   const options: ChatKitOptions = useMemo(
     () => ({
@@ -94,15 +96,30 @@ export function ChatKitPanel() {
           console.log("Widget action triggered:", action.type, action.payload);
           console.log("Widget item:", widgetItem);
 
+          // Forward the action back to the workflow so it can respond
+          const chatkit = chatkitRef.current;
+          if (chatkit && "sendCustomAction" in chatkit && typeof chatkit.sendCustomAction === "function") {
+            try {
+              await chatkit.sendCustomAction(
+                {
+                  type: action.type,
+                  payload: action.payload,
+                },
+                widgetItem?.id
+              );
+              console.log(`Action ${action.type} forwarded to workflow`);
+            } catch (error) {
+              console.error("Error forwarding action to workflow:", error);
+            }
+          }
+
+          // Handle specific action types if needed
           if (action.type === "request.submit") {
-            // Handle submit action
             console.log("User confirmed/submitted:", action.payload);
-            // Add your custom logic here for handling the submit action
-            // For example, you could send data to your backend API
+            // Add your custom client-side logic here if needed
           } else if (action.type === "request.discard") {
-            // Handle discard action
             console.log("User discarded/cancelled:", action.payload);
-            // Add your custom logic here for handling the discard action
+            // Add your custom client-side logic here if needed
           }
         },
       },
@@ -111,6 +128,7 @@ export function ChatKitPanel() {
   );
 
   const chatkit = useChatKit(options);
+  chatkitRef.current = chatkit;
 
   return (
     <div className="flex h-[90vh] w-full rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">

@@ -11,14 +11,23 @@ cd "$PROJECT_ROOT"
 
 if [ ! -d ".venv" ]; then
   echo "Creating virtual env in $PROJECT_ROOT/.venv ..."
-  # Try python3.11 first, fallback to python3.13, then python3
+  # Try python3.11 first (check both command and common paths), fallback to python3.13, then python3
+  PYTHON_CMD=""
   if command -v python3.11 &> /dev/null; then
-    python3.11 -m venv .venv
+    PYTHON_CMD="python3.11"
+  elif [ -f "/opt/homebrew/bin/python3.11" ]; then
+    PYTHON_CMD="/opt/homebrew/bin/python3.11"
   elif command -v python3.13 &> /dev/null; then
-    python3.13 -m venv .venv
+    PYTHON_CMD="python3.13"
+  elif [ -f "/opt/homebrew/bin/python3.13" ]; then
+    PYTHON_CMD="/opt/homebrew/bin/python3.13"
+  elif command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
   else
-    python3 -m venv .venv
+    echo "Error: No suitable Python version found. Requires Python 3.11+"
+    exit 1
   fi
+  $PYTHON_CMD -m venv .venv
 fi
 
 source .venv/bin/activate
