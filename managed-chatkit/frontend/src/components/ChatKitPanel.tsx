@@ -108,8 +108,36 @@ export function ChatKitPanel() {
                 widgetItem?.id
               );
               console.log(`Action ${action.type} forwarded to workflow`);
+
+              // Show success confirmation in the chat
+              if (chatkit && "sendUserMessage" in chatkit && typeof chatkit.sendUserMessage === "function") {
+                try {
+                  // Determine success message based on action type
+                  let successMessage = "✓ Action completed successfully";
+                  if (action.type === "request.submit") {
+                    successMessage = "✓ Thanks";
+                  } else if (action.type === "request.discard") {
+                    successMessage = "✓ Discard";
+                  }
+
+                  await chatkit.sendUserMessage({ text: successMessage });
+                } catch (error) {
+                  console.error("Error sending success message:", error);
+                }
+              }
             } catch (error) {
               console.error("Error forwarding action to workflow:", error);
+              
+              // Show error message in chat if action failed
+              if (chatkit && "sendUserMessage" in chatkit && typeof chatkit.sendUserMessage === "function") {
+                try {
+                  await chatkit.sendUserMessage({ 
+                    text: "❌ Action failed. Please try again." 
+                  });
+                } catch (msgError) {
+                  console.error("Error sending error message:", msgError);
+                }
+              }
             }
           }
 
