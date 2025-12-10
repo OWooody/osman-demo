@@ -224,7 +224,7 @@ export function ChatKitPanel() {
       {/* Right Panel - White Panel */}
       <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible">
         {showReport ? (
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col overflow-visible">
             {/* Header Section */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
@@ -242,11 +242,11 @@ export function ChatKitPanel() {
             </div>
 
             {/* Chart Section */}
-            <div className="flex-1 min-h-0 mb-6 -mx-6 relative" style={{ left: '-1.5rem', right: '-1.5rem', width: 'calc(100% + 3rem)' }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="flex-1 min-h-0 mb-6" style={{ marginLeft: '-1.5rem', marginRight: '-1.5rem', width: 'calc(100% + 3rem)' }}>
+              <ResponsiveContainer width="100%" height="100%" style={{ padding: 0, margin: 0 }}>
                 <AreaChart
                   data={profitLossData}
-                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                  margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
@@ -262,6 +262,7 @@ export function ChatKitPanel() {
                     tick={false}
                   />
                   <YAxis 
+                    width={0}
                     axisLine={false}
                     tickLine={false}
                     tick={false}
