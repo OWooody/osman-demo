@@ -266,6 +266,7 @@ export function ChatKitPanel() {
                     axisLine={false}
                     tickLine={false}
                     tick={false}
+                    domain={[0, 'auto']}
                   />
                   <Area
                     type="monotone"
@@ -273,6 +274,8 @@ export function ChatKitPanel() {
                     stroke="#8000ff"
                     strokeWidth={2.5}
                     fill="url(#profitGradient)"
+                    baseValue={0}
+                    isAnimationActive={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
