@@ -222,7 +222,7 @@ export function ChatKitPanel() {
       </div>
       
       {/* Right Panel - White Panel */}
-      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible">
+      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {showReport ? (
           <div className="h-full flex flex-col overflow-visible">
             {/* Header Section */}
