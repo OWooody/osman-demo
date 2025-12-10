@@ -4,9 +4,45 @@ import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
+// Helper functions for localStorage persistence
+const STORAGE_KEYS = {
+  INVOICE_DATA: 'chatkit_invoice_data',
+  SHOW_REPORT: 'chatkit_show_report',
+};
+
+function loadStoredState() {
+  try {
+    const storedInvoice = localStorage.getItem(STORAGE_KEYS.INVOICE_DATA);
+    const storedShowReport = localStorage.getItem(STORAGE_KEYS.SHOW_REPORT);
+    
+    return {
+      invoiceData: storedInvoice ? JSON.parse(storedInvoice) : null,
+      showReport: storedShowReport === 'true',
+    };
+  } catch (error) {
+    console.error('Error loading stored state:', error);
+    return { invoiceData: null, showReport: false };
+  }
+}
+
+function saveState(invoiceData: any, showReport: boolean) {
+  try {
+    if (invoiceData) {
+      localStorage.setItem(STORAGE_KEYS.INVOICE_DATA, JSON.stringify(invoiceData));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.INVOICE_DATA);
+    }
+    localStorage.setItem(STORAGE_KEYS.SHOW_REPORT, String(showReport));
+  } catch (error) {
+    console.error('Error saving state:', error);
+  }
+}
+
 export function ChatKitPanel() {
-  const [showReport, setShowReport] = useState(false);
-  const [invoiceData, setInvoiceData] = useState<any>(null);
+  // Initialize state from localStorage if available
+  const initialState = loadStoredState();
+  const [showReport, setShowReport] = useState(initialState.showReport);
+  const [invoiceData, setInvoiceData] = useState<any>(initialState.invoiceData);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -138,6 +174,7 @@ export function ChatKitPanel() {
         if (toolCall.name === "generate_report") {
           console.log("📊 generate_report tool called with:", toolCall);
           setShowReport(true);
+          saveState(null, true); // Save report state
         }
         
         // Return a result for the tool call
@@ -209,6 +246,7 @@ export function ChatKitPanel() {
                     console.log("Setting invoice data:", invoice);
                     setInvoiceData(invoice);
                     setShowReport(false); // Hide report if showing
+                    saveState(invoice, false); // Save invoice state
                   } else if (action.type === "request.discard") {
                     successMessage = "✓ Discard";
                   }
@@ -244,6 +282,7 @@ export function ChatKitPanel() {
             console.log("User discarded/cancelled:", action.payload);
             // Clear invoice if discarded
             setInvoiceData(null);
+            saveState(null, showReport); // Update storage
             console.log("Invoice data cleared");
           }
         },
@@ -254,6 +293,11 @@ export function ChatKitPanel() {
 
   const chatkit = useChatKit(options);
   chatkitRef.current = chatkit;
+
+  // Sync state to localStorage whenever it changes
+  useEffect(() => {
+    saveState(invoiceData, showReport);
+  }, [invoiceData, showReport]);
 
   // Debug: Log invoiceData state changes
   useEffect(() => {
@@ -455,8 +499,68 @@ export function ChatKitPanel() {
             </div>
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
-            <p className="text-lg">Generate a report or create an invoice to view data</p>
+          <div className="h-full flex flex-col items-center justify-center text-gray-600">
+            {/* Welcome Dashboard View */}
+            <div className="max-w-md text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold text-gray-900">Welcome to Your Dashboard</h2>
+                <p className="text-sm text-gray-500">Get started by asking me to create an invoice or generate a report</p>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="grid grid-cols-2 gap-3 mt-8">
+                <div 
+                  className="p-4 rounded-lg border border-gray-200 hover:border-[#8000ff] hover:bg-[#8000ff]/5 transition-all cursor-pointer group"
+                  onClick={() => {
+                    const chatkit = chatkitRef.current;
+                    if (chatkit && "sendUserMessage" in chatkit && typeof chatkit.sendUserMessage === "function") {
+                      chatkit.sendUserMessage({ text: "Create an invoice for a client" });
+                    }
+                  }}
+                >
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📄</div>
+                  <div className="text-sm font-medium text-gray-900">Create Invoice</div>
+                  <div className="text-xs text-gray-500 mt-1">Start here</div>
+                </div>
+                
+                <div 
+                  className="p-4 rounded-lg border border-gray-200 hover:border-[#8000ff] hover:bg-[#8000ff]/5 transition-all cursor-pointer group"
+                  onClick={() => {
+                    const chatkit = chatkitRef.current;
+                    if (chatkit && "sendUserMessage" in chatkit && typeof chatkit.sendUserMessage === "function") {
+                      chatkit.sendUserMessage({ text: "Generate a profit and loss report" });
+                    }
+                  }}
+                >
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
+                  <div className="text-sm font-medium text-gray-900">View Report</div>
+                  <div className="text-xs text-gray-500 mt-1">Get insights</div>
+                </div>
+              </div>
+
+              {/* Feature List */}
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <p className="text-xs text-gray-500 mb-3">Available Actions:</p>
+                <div className="space-y-2 text-left">
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span>✓</span>
+                    <span>Create and manage invoices</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span>✓</span>
+                    <span>Generate profit & loss reports</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span>✓</span>
+                    <span>Reconcile bank accounts</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span>✓</span>
+                    <span>Categorize business expenses</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
