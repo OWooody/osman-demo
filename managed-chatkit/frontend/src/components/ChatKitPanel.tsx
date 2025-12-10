@@ -15,6 +15,58 @@ export function ChatKitPanel() {
 
   const chatkitRef = useRef<ReturnType<typeof useChatKit> | null>(null);
 
+  // Generate completed tasks that Osman accomplished while away
+  const completedTasks = useMemo(() => {
+    const now = new Date();
+    const tasks = [
+      {
+        id: 1,
+        icon: "✓",
+        action: "Reconciled bank account",
+        details: "15 transactions processed",
+        timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+      },
+      {
+        id: 2,
+        icon: "📋",
+        action: "Categorized business expenses",
+        details: "8 expenses organized",
+        timestamp: new Date(now.getTime() - 3.5 * 60 * 60 * 1000), // 3.5 hours ago
+      },
+      {
+        id: 3,
+        icon: "📅",
+        action: "Tracked bills and due dates",
+        details: "3 upcoming bills identified",
+        timestamp: new Date(now.getTime() - 5 * 60 * 60 * 1000), // 5 hours ago
+      },
+      {
+        id: 4,
+        icon: "📊",
+        action: "Updated profit & loss summary",
+        details: "December 2025 analysis complete",
+        timestamp: new Date(now.getTime() - 6 * 60 * 60 * 1000), // 6 hours ago
+      },
+      {
+        id: 5,
+        icon: "💰",
+        action: "Reviewed cash flow",
+        details: "No issues detected",
+        timestamp: new Date(now.getTime() - 8 * 60 * 60 * 1000), // 8 hours ago
+      },
+    ];
+
+    return tasks.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }, []);
+
+  const formatTimeAgo = (date: Date) => {
+    const now = new Date();
+    const hoursAgo = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    if (hoursAgo < 1) return "Just now";
+    if (hoursAgo === 1) return "1 hour ago";
+    return `${hoursAgo} hours ago`;
+  };
+
   // Profit and Loss data - matching the design
   const profitLossData = [
     { month: "Jan", profit: 18000 },
@@ -455,8 +507,56 @@ export function ChatKitPanel() {
             </div>
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
-            <p className="text-lg">Generate a report or create an invoice to view data</p>
+          <div className="h-full flex flex-col overflow-y-auto">
+            {/* "While You Were Away" Header */}
+            <div className="mb-6 pb-4 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-[#8000ff]/10 flex items-center justify-center">
+                  <span className="text-xl">🤖</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">While you were away</h2>
+                  <p className="text-sm text-gray-500">Osman completed {completedTasks.length} tasks</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity Timeline */}
+            <div className="flex-1 space-y-0">
+              {completedTasks.map((task, index) => (
+                <div key={task.id} className="relative flex gap-4 pb-6">
+                  {/* Timeline line */}
+                  {index < completedTasks.length - 1 && (
+                    <div className="absolute left-[15px] top-8 bottom-0 w-0.5 bg-gray-200"></div>
+                  )}
+                  
+                  {/* Icon */}
+                  <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-[#8000ff]/10 flex items-center justify-center">
+                    <span className="text-sm">{task.icon}</span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <div className="flex items-start justify-between gap-4 mb-1">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">{task.action}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{task.details}</div>
+                      </div>
+                      <div className="flex-shrink-0 text-xs text-gray-400 whitespace-nowrap">
+                        {formatTimeAgo(task.timestamp)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer note */}
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <p className="text-xs text-gray-400 text-center">
+                All tasks completed automatically. Check your accounts for details.
+              </p>
+            </div>
           </div>
         )}
       </div>
