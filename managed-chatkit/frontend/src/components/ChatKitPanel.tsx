@@ -184,7 +184,7 @@ export function ChatKitPanel() {
 
 
   return (
-    <div className="flex h-[90vh] w-full gap-4">
+    <div className="flex h-[95vh] w-full gap-4">
       {/* Left Panel - ChatKit */}
       <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
         <ChatKit control={chatkit.control} className="h-full w-full" />
