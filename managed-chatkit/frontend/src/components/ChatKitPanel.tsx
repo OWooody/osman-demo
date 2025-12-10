@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
@@ -6,6 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false);
+  const [invoiceData, setInvoiceData] = useState<any>(null);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -132,7 +133,7 @@ export function ChatKitPanel() {
       onClientTool: async (toolCall) => {
         console.log("🔧 Tool called from workflow:", toolCall);
         console.log("Tool name:", toolCall.name);
-        console.log("Tool arguments:", toolCall.arguments);
+        console.log("Tool params:", toolCall.params);
         
         if (toolCall.name === "generate_report") {
           console.log("📊 generate_report tool called with:", toolCall);
@@ -148,8 +149,16 @@ export function ChatKitPanel() {
       },
       widgets: {
         async onAction(action, widgetItem) {
-          console.log("Widget action triggered:", action.type, action.payload);
+          console.log("=== WIDGET ACTION TRIGGERED ===");
+          console.log("Action type:", action.type);
+          console.log("Action payload:", action.payload);
+          console.log("Action payload type:", typeof action.payload);
+          console.log("Action payload keys:", action.payload && typeof action.payload === 'object' ? Object.keys(action.payload) : 'N/A');
+          console.log("Full action object:", JSON.stringify(action, null, 2));
           console.log("Widget item:", widgetItem);
+          console.log("Widget item keys:", widgetItem ? Object.keys(widgetItem) : 'N/A');
+          console.log("Widget item widget:", widgetItem?.widget);
+          console.log("Widget item widget keys:", widgetItem?.widget && typeof widgetItem.widget === 'object' ? Object.keys(widgetItem.widget) : 'N/A');
 
           // Forward the action back to the workflow so it can respond
           const chatkit = chatkitRef.current;
@@ -171,6 +180,35 @@ export function ChatKitPanel() {
                   let successMessage = "✓ Action completed successfully";
                   if (action.type === "request.submit") {
                     successMessage = "✓ Thanks";
+                    
+                    // Show invoice in right panel when sending "Thanks" message
+                    console.log("=== SHOWING INVOICE (Thanks message sent) ===");
+                    console.log("Action payload:", action.payload);
+                    console.log("Widget item:", widgetItem);
+                    
+                    // Extract invoice data from payload
+                    let invoice: any = {};
+                    if (action.payload && typeof action.payload === 'object') {
+                      invoice = action.payload;
+                    } else if (action.payload) {
+                      invoice = { data: action.payload, confirmed: true };
+                    } else {
+                      // Create a basic invoice structure from widget if available
+                      const widget = widgetItem?.widget;
+                      if (widget && typeof widget === 'object') {
+                        invoice = { 
+                          confirmed: true, 
+                          timestamp: new Date().toISOString(),
+                          widgetData: widget
+                        };
+                      } else {
+                        invoice = { confirmed: true, timestamp: new Date().toISOString() };
+                      }
+                    }
+                    
+                    console.log("Setting invoice data:", invoice);
+                    setInvoiceData(invoice);
+                    setShowReport(false); // Hide report if showing
                   } else if (action.type === "request.discard") {
                     successMessage = "✓ Discard";
                   }
@@ -196,13 +234,17 @@ export function ChatKitPanel() {
             }
           }
 
-          // Handle specific action types if needed
+          // Additional logging for debugging
           if (action.type === "request.submit") {
-            console.log("User confirmed/submitted:", action.payload);
-            // Add your custom client-side logic here if needed
+            console.log("=== REQUEST.SUBMIT - Additional Info ===");
+            console.log("Payload (stringified):", JSON.stringify(action.payload, null, 2));
+            console.log("Widget (stringified):", JSON.stringify(widgetItem?.widget, null, 2));
           } else if (action.type === "request.discard") {
+            console.log("=== REQUEST.DISCARD DETECTED ===");
             console.log("User discarded/cancelled:", action.payload);
-            // Add your custom client-side logic here if needed
+            // Clear invoice if discarded
+            setInvoiceData(null);
+            console.log("Invoice data cleared");
           }
         },
       },
@@ -212,6 +254,15 @@ export function ChatKitPanel() {
 
   const chatkit = useChatKit(options);
   chatkitRef.current = chatkit;
+
+  // Debug: Log invoiceData state changes
+  useEffect(() => {
+    console.log("=== INVOICE DATA STATE CHANGED ===");
+    console.log("invoiceData:", invoiceData);
+    console.log("invoiceData type:", typeof invoiceData);
+    console.log("invoiceData keys:", invoiceData && typeof invoiceData === 'object' ? Object.keys(invoiceData) : 'N/A');
+    console.log("showReport:", showReport);
+  }, [invoiceData, showReport]);
 
 
   return (
@@ -223,7 +274,110 @@ export function ChatKitPanel() {
       
       {/* Right Panel - White Panel */}
       <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors p-6 overflow-visible" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
-        {showReport ? (
+        {(() => {
+          console.log("=== RENDERING RIGHT PANEL ===");
+          console.log("invoiceData:", invoiceData);
+          console.log("showReport:", showReport);
+          console.log("Will show invoice:", !!invoiceData);
+          console.log("Will show report:", showReport && !invoiceData);
+          return null;
+        })()}
+        {invoiceData ? (
+          <div className="h-full flex flex-col overflow-y-auto">
+            {/* Invoice Header */}
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Invoice Created</h2>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span className="text-sm text-gray-600">Invoice has been successfully created</span>
+              </div>
+            </div>
+
+            {/* Invoice Details */}
+            <div className="flex-1 border border-gray-200 rounded-lg p-6 bg-gray-50">
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoice Details</h3>
+                
+                {/* Invoice Number */}
+                <div className="mb-4">
+                  <span className="text-sm text-gray-600">Invoice Number:</span>
+                  <span className="ml-2 text-sm font-medium text-gray-900">
+                    {invoiceData.invoiceNumber || 'INV-2025-001'}
+                  </span>
+                </div>
+
+                {/* Client Information */}
+                <div className="mb-4">
+                  <span className="text-sm text-gray-600">Client:</span>
+                  <span className="ml-2 text-sm font-medium text-gray-900">
+                    {invoiceData.client || invoiceData.clientName || 'Acme Corporation'}
+                  </span>
+                </div>
+
+                {/* Date */}
+                <div className="mb-4">
+                  <span className="text-sm text-gray-600">Date:</span>
+                  <span className="ml-2 text-sm font-medium text-gray-900">
+                    {invoiceData.date || invoiceData.invoiceDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                </div>
+
+                {/* Due Date */}
+                <div className="mb-4">
+                  <span className="text-sm text-gray-600">Due Date:</span>
+                  <span className="ml-2 text-sm font-medium text-gray-900">
+                    {invoiceData.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                </div>
+
+                {/* Line Items */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <span className="text-sm font-semibold text-gray-900 block mb-3">Line Items:</span>
+                  <div className="space-y-3">
+                    {(invoiceData.items || invoiceData.lineItems || [
+                      { description: 'Web Development Services', quantity: 40, rate: 250, amount: 10000 },
+                      { description: 'UI/UX Design', quantity: 20, rate: 125, amount: 2500 }
+                    ]).map((item: any, index: number) => (
+                      <div key={index} className="flex justify-between items-start pb-2 border-b border-gray-100 last:border-0">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">{item.description || item.name}</div>
+                          {item.quantity && item.rate && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {item.quantity} × {item.currency || 'SAR'} {item.rate.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.currency || 'SAR'} {(item.amount || item.price || 0).toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total Amount */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-semibold text-gray-900">Total Amount:</span>
+                    <span className="text-2xl font-bold text-[#8000ff]">
+                      {invoiceData.currency || 'SAR'} {(invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Show raw data if available for debugging */}
+                {process.env.NODE_ENV === 'development' && (
+                  <details className="mt-6 pt-4 border-t border-gray-200">
+                    <summary className="text-xs text-gray-500 cursor-pointer mb-2">Debug: View raw data</summary>
+                    <pre className="text-xs bg-white p-3 rounded border border-gray-200 overflow-auto">
+                      {JSON.stringify(invoiceData, null, 2)}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : showReport ? (
           <div className="h-full flex flex-col overflow-visible">
             {/* Header Section */}
             <div className="flex items-start justify-between mb-6">
@@ -299,7 +453,7 @@ export function ChatKitPanel() {
           </div>
         ) : (
           <div className="h-full flex items-center justify-center text-gray-400">
-            <p className="text-lg">Generate a report to view profit & loss data</p>
+            <p className="text-lg">Generate a report or create an invoice to view data</p>
           </div>
         )}
       </div>
