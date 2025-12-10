@@ -184,8 +184,16 @@ export function ChatKitPanel() {
 
 
   return (
-    <div className="flex h-[90vh] w-full rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
-      <ChatKit control={chatkit.control} className="h-full w-full" />
+    <div className="flex h-[90vh] w-full gap-4">
+      {/* Left Panel - ChatKit */}
+      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
+        <ChatKit control={chatkit.control} className="h-full w-full" />
+      </div>
+      
+      {/* Right Panel - White Panel */}
+      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors">
+        {/* Add your content here */}
+      </div>
     </div>
   );
 }
