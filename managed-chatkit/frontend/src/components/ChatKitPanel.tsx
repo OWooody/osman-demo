@@ -89,7 +89,23 @@ export function ChatKitPanel() {
           },
         ],
       },
-      // Optional fields not shown: locale, initialThread, threadItemActions, header, onClientTool, entities, widgets
+      widgets: {
+        async onAction(action, widgetItem) {
+          console.log("Widget action triggered:", action.type, action.payload);
+          console.log("Widget item:", widgetItem);
+
+          if (action.type === "request.submit") {
+            // Handle submit action
+            console.log("User confirmed/submitted:", action.payload);
+            // Add your custom logic here for handling the submit action
+            // For example, you could send data to your backend API
+          } else if (action.type === "request.discard") {
+            // Handle discard action
+            console.log("User discarded/cancelled:", action.payload);
+            // Add your custom logic here for handling the discard action
+          }
+        },
+      },
     }),
     [getClientSecret]
   );
