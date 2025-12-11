@@ -1,7 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function DotGridBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  // Watch for dark mode changes
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const colorScheme = document.documentElement.getAttribute('data-color-scheme');
+      setIsDark(colorScheme === 'dark');
+    };
+    
+    checkDarkMode();
+    
+    // Observe attribute changes on html element
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-color-scheme'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -59,6 +76,9 @@ export function DotGridBackground() {
       
       const elapsed = (performance.now() - startTime) / 1000;
       
+      // Dot color based on dark mode
+      const dotColor = isDark ? '180, 180, 180' : '100, 100, 100';
+      
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const x = col * spacing;
@@ -79,7 +99,7 @@ export function DotGridBackground() {
           const maxOpacity = isOnStripe ? 0.45 : 0.12;
           const opacity = minOpacity + twinkle * (maxOpacity - minOpacity);
           
-          ctx.fillStyle = `rgba(100, 100, 100, ${opacity})`;
+          ctx.fillStyle = `rgba(${dotColor}, ${opacity})`;
           ctx.fillRect(x - dotRadius, y - dotRadius, dotRadius * 2, dotRadius * 2);
         }
       }
@@ -95,7 +115,9 @@ export function DotGridBackground() {
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [isDark]);
+
+  const bgColor = isDark ? '#0a0a0a' : '#fafafa';
 
   return (
     <div className="absolute inset-0">
@@ -108,8 +130,8 @@ export function DotGridBackground() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `
-            linear-gradient(to right, #fafafa 0%, transparent 15%, transparent 85%, #fafafa 100%),
-            linear-gradient(to bottom, #fafafa 0%, transparent 15%, transparent 85%, #fafafa 100%)
+            linear-gradient(to right, ${bgColor} 0%, transparent 15%, transparent 85%, ${bgColor} 100%),
+            linear-gradient(to bottom, ${bgColor} 0%, transparent 15%, transparent 85%, ${bgColor} 100%)
           `,
         }}
       />
