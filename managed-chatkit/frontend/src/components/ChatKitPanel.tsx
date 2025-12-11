@@ -272,10 +272,7 @@ export function ChatKitPanel() {
                   if (action.type === "request.submit") {
                     successMessage = "✓ Thanks";
                     
-                    // Show invoice in right panel when sending "Thanks" message
-                    console.log("=== SHOWING INVOICE (Thanks message sent) ===");
-                    console.log("Action payload:", action.payload);
-                    console.log("Widget item:", widgetItem);
+
                     
                     // Extract invoice data from payload
                     let invoice: any = {};
@@ -346,16 +343,6 @@ export function ChatKitPanel() {
   const chatkit = useChatKit(options);
   chatkitRef.current = chatkit;
 
-  // Debug: Log invoiceData state changes
-  useEffect(() => {
-    console.log("=== INVOICE DATA STATE CHANGED ===");
-    console.log("invoiceData:", invoiceData);
-    console.log("invoiceData type:", typeof invoiceData);
-    console.log("invoiceData keys:", invoiceData && typeof invoiceData === 'object' ? Object.keys(invoiceData) : 'N/A');
-    console.log("showReport:", showReport);
-  }, [invoiceData, showReport]);
-
-
   // TEST: Trigger reconcile on page load
   useEffect(() => {
     setShowReconcile(true);
@@ -401,11 +388,6 @@ export function ChatKitPanel() {
       {hasContent ? (
         <div className="flex-1 bg-transparent transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
-          console.log("=== RENDERING RIGHT PANEL ===");
-          console.log("invoiceData:", invoiceData);
-          console.log("showReport:", showReport);
-          console.log("Will show invoice:", !!invoiceData);
-          console.log("Will show report:", showReport && !invoiceData);
           return null;
         })()}
         {invoiceData ? (
