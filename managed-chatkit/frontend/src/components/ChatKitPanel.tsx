@@ -265,15 +265,19 @@ export function ChatKitPanel() {
   }, [invoiceData, showReport]);
 
 
+  // Determine if right panel should be visible
+  const hasContent = invoiceData || showReport;
+
   return (
     <div className="flex h-[95vh] w-full gap-4">
       {/* Left Panel - ChatKit */}
-      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
+      <div className={`rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900 transition-all duration-300 ${hasContent ? 'flex-1' : 'w-full'}`}>
         <ChatKit control={chatkit.control} className="h-full w-full" />
       </div>
       
-      {/* Right Panel - White Panel */}
-      <div className="flex-1 bg-white shadow-sm transition-colors p-6 overflow-visible" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+      {/* Right Panel - White Panel - Only visible when there's content */}
+      {hasContent && (
+        <div className="flex-1 bg-white shadow-sm transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           console.log("=== RENDERING RIGHT PANEL ===");
           console.log("invoiceData:", invoiceData);
@@ -454,12 +458,9 @@ export function ChatKitPanel() {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
-            <p className="text-lg">Generate a report or create an invoice to view data</p>
-          </div>
-        )}
-      </div>
+        ) : null}
+        </div>
+      )}
     </div>
   );
 }
