@@ -3,6 +3,7 @@ import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { DotGridBackground } from "./DotGridBackground";
 
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false);
@@ -461,7 +462,9 @@ export function ChatKitPanel() {
         ) : null}
         </div>
       ) : (
-        <div className="flex-1"></div>
+        <div className="flex-1 relative overflow-hidden">
+          <DotGridBackground />
+        </div>
       )}
     </div>
   );
