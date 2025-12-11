@@ -270,13 +270,13 @@ export function ChatKitPanel() {
 
   return (
     <div className="flex h-[95vh] w-full gap-4">
-      {/* Left Panel - ChatKit */}
-      <div className={`rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900 transition-all duration-300 ${hasContent ? 'flex-1' : 'w-full'}`}>
+      {/* Left Panel - ChatKit - Fixed size (always flex-1) */}
+      <div className="flex-1 rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
         <ChatKit control={chatkit.control} className="h-full w-full" />
       </div>
       
-      {/* Right Panel - White Panel - Only visible when there's content */}
-      {hasContent && (
+      {/* Right Panel - White Panel - Only visible when there's content, but space is reserved */}
+      {hasContent ? (
         <div className="flex-1 bg-white shadow-sm transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           console.log("=== RENDERING RIGHT PANEL ===");
@@ -460,6 +460,8 @@ export function ChatKitPanel() {
           </div>
         ) : null}
         </div>
+      ) : (
+        <div className="flex-1"></div>
       )}
     </div>
   );
