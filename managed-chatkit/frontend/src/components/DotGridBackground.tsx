@@ -103,6 +103,16 @@ export function DotGridBackground() {
         ref={canvasRef}
         style={{ width: '100%', height: '100%' }}
       />
+      {/* Gradient fade overlay on all edges */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            linear-gradient(to right, #fafafa 0%, transparent 15%, transparent 85%, #fafafa 100%),
+            linear-gradient(to bottom, #fafafa 0%, transparent 15%, transparent 85%, #fafafa 100%)
+          `,
+        }}
+      />
     </div>
   );
 }
