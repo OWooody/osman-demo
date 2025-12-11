@@ -7,7 +7,9 @@ import { DotGridBackground } from "./DotGridBackground";
 
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false);
+  const [showReconcile, setShowReconcile] = useState(false);
   const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [reconciledIds, setReconciledIds] = useState<string[]>([]);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -42,6 +44,85 @@ export function ChatKitPanel() {
   // Revenue and Expenses for footer
   const currentRevenue = 124500;
   const currentExpenses = 96200;
+
+  // Reconciliation data
+  const reconciliationTransactions = useMemo(
+    () => [
+      { id: "tx-1", vendor: "TECHFLOW INC", type: "Wire Transfer", date: "Jan 15", amount: 8900, direction: "in" },
+      { id: "tx-2", vendor: "ANTHROPIC PBC", type: "Recurring Payment", date: "Jan 14", amount: -3247, direction: "out" },
+      { id: "tx-3", vendor: "OPENAI", type: "Recurring Payment", date: "Jan 14", amount: -2856, direction: "out" },
+      { id: "tx-4", vendor: "OPENAI", type: "Debit Card", date: "Jan 14", amount: -428, direction: "out" },
+      { id: "tx-5", vendor: "AMZN PMTS", type: "AWS", date: "Jan 13", amount: -4235, direction: "out" },
+      { id: "tx-6", vendor: "GOOGLE *CLOUD", type: "ACH Debit", date: "Jan 13", amount: -1890, direction: "out" },
+      { id: "tx-7", vendor: "VERCEL INC", type: "Recurring Payment", date: "Jan 13", amount: -892, direction: "out" },
+    ],
+    []
+  );
+
+  const chartOfAccounts = useMemo(
+    () => [
+      {
+        name: "Revenue",
+        balance: 12500,
+        children: [
+          { name: "Customer Payments", balance: 12500, id: "tx-1" },
+          { name: "Recurring Revenue", balance: 0 },
+        ],
+      },
+      {
+        name: "Cost of Revenue",
+        balance: 0,
+        children: [{ name: "AI Provider Expenses", balance: 0, id: "tx-3" }],
+      },
+      {
+        name: "Operating Expenses",
+        balance: 0,
+        children: [
+          { name: "Infrastructure & Hosting", balance: 0, id: "tx-5" },
+          { name: "Payroll & Benefits", balance: 0 },
+          { name: "Insurance", balance: 0 },
+          { name: "SaaS & Tooling", balance: 0, id: "tx-7" },
+          { name: "Professional Services", balance: 0, id: "tx-6" },
+          { name: "Research & Development", balance: 0, id: "tx-2" },
+          { name: "Bank Fees", balance: 0, id: "tx-4" },
+        ],
+      },
+    ],
+    []
+  );
+
+  const reconciliationSequence = useMemo(
+    () => reconciliationTransactions.map((tx) => tx.id),
+    [reconciliationTransactions]
+  );
+
+  const activeTransactionId =
+    showReconcile && reconciliationSequence.length > 0
+      ? reconciliationSequence[Math.min(reconciledIds.length, reconciliationSequence.length - 1)]
+      : null;
+
+  const reconciliationProgress = Math.min(
+    (reconciledIds.length / reconciliationTransactions.length) * 100,
+    100
+  );
+
+  // Helper to get transaction amount by ID
+  const getTransactionAmount = (txId: string) => {
+    const tx = reconciliationTransactions.find(t => t.id === txId);
+    return tx ? Math.abs(tx.amount) : 0;
+  };
+
+  // Compute dynamic balances based on reconciled transactions
+  const getAccountBalance = (accountId?: string) => {
+    if (!accountId) return 0;
+    if (!reconciledIds.includes(accountId)) return 0;
+    return getTransactionAmount(accountId);
+  };
+
+  // Compute section totals
+  const getSectionBalance = (children: Array<{ id?: string }>) => {
+    return children.reduce((sum, child) => sum + getAccountBalance(child.id), 0);
+  };
 
   const options: ChatKitOptions = useMemo(
     () => ({
@@ -139,6 +220,15 @@ export function ChatKitPanel() {
         if (toolCall.name === "generate_report") {
           console.log("📊 generate_report tool called with:", toolCall);
           setShowReport(true);
+          setShowReconcile(false);
+        }
+        
+        if (toolCall.name === "reconcile") {
+          console.log("🔄 reconcile tool called with:", toolCall);
+          setShowReconcile(true);
+          setShowReport(false);
+          setInvoiceData(null);
+          setReconciledIds([]);
         }
         
         // Return a result for the tool call
@@ -266,8 +356,39 @@ export function ChatKitPanel() {
   }, [invoiceData, showReport]);
 
 
+  // TEST: Trigger reconcile on page load
+  useEffect(() => {
+    setShowReconcile(true);
+  }, []);
+
+  // Drive reconciliation animation
+  useEffect(() => {
+    if (!showReconcile) {
+      return;
+    }
+
+    setReconciledIds([]);
+
+    let step = 0;
+    const intervalId = setInterval(() => {
+      const nextId = reconciliationSequence[step];
+      if (nextId) {
+        setReconciledIds((prev) =>
+          prev.includes(nextId) ? prev : [...prev, nextId]
+        );
+      }
+
+      step += 1;
+      if (step >= reconciliationSequence.length) {
+        clearInterval(intervalId);
+      }
+    }, 1200);
+
+    return () => clearInterval(intervalId);
+  }, [reconciliationSequence, showReconcile]);
+
   // Determine if right panel should be visible
-  const hasContent = invoiceData || showReport;
+  const hasContent = invoiceData || showReport || showReconcile;
 
   return (
     <div className="flex h-[95vh] w-full gap-4">
@@ -458,6 +579,116 @@ export function ChatKitPanel() {
                 </span>
               </div>
             </div>
+          </div>
+        ) : showReconcile ? (
+          <div className="h-full flex flex-col overflow-hidden space-y-4">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">Matching transactions</h2>
+                <p className="text-sm text-gray-500 mt-1">Auto-matching with your chart of accounts</p>
+              </div>
+              <div className="px-3 py-1.5 rounded-full bg-purple-50 text-sm text-[#8000ff] font-semibold border border-purple-100">
+                {Math.round(reconciliationProgress)}% complete
+              </div>
+            </div>
+
+            {/* Two panel layout */}
+            <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+              {/* Transactions Panel */}
+              <div className="bg-gray-50 rounded-xl p-4 flex flex-col overflow-hidden border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold text-gray-700">Transactions</span>
+                  <span className="text-xs text-gray-400">Bank feed</span>
+                </div>
+                <div className="flex-1 overflow-auto space-y-2">
+                  {reconciliationTransactions.map((tx, index) => {
+                    const isMatched = reconciledIds.includes(tx.id);
+                    const isActive = activeTransactionId === tx.id && !isMatched;
+                    return (
+                      <div
+                        key={tx.id}
+                        className={`flex items-center justify-between rounded-lg px-3 py-2 border transition-all duration-300 ${
+                          isMatched
+                            ? "border-green-300 bg-green-50 reconcile-matched"
+                            : isActive
+                            ? "border-[#8000ff] bg-purple-50 shadow-md reconcile-active"
+                            : "border-gray-200 bg-white"
+                        }`}
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">{tx.vendor}</div>
+                          <div className="text-xs uppercase text-gray-400">{tx.type}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-gray-400">{tx.date}</div>
+                          <div className={`text-sm font-semibold ${tx.amount >= 0 ? "text-green-600" : "text-gray-700"}`}>
+                            {tx.amount >= 0 ? "+" : ""}{tx.amount.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Chart of Accounts Panel */}
+              <div className="bg-gray-50 rounded-xl p-4 flex flex-col overflow-hidden border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold text-gray-700">Chart of Accounts</span>
+                  <span className="text-xs text-gray-400">Mapping</span>
+                </div>
+                <div className="flex-1 overflow-auto space-y-2">
+                  {chartOfAccounts.map((section) => {
+                    const sectionTotal = getSectionBalance(section.children || []);
+                    return (
+                      <div key={section.name} className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+                        <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                          <div className="text-sm font-semibold text-gray-700">{section.name}</div>
+                          <div className={`text-sm font-semibold transition-all duration-300 ${sectionTotal > 0 ? "text-green-600" : "text-gray-400"}`}>
+                            ${sectionTotal.toLocaleString()}
+                          </div>
+                        </div>
+                        {section.children && (
+                          <div className="divide-y divide-gray-100">
+                            {section.children.map((child) => {
+                              const isMatched = child.id && reconciledIds.includes(child.id);
+                              const isActive = child.id && activeTransactionId === child.id && !isMatched;
+                              const childBalance = getAccountBalance(child.id);
+                              return (
+                                <div
+                                  key={child.name}
+                                  className={`flex items-center justify-between px-3 py-2 text-sm transition-all duration-300 ${
+                                    isMatched
+                                      ? "bg-green-50 text-green-700 reconcile-matched"
+                                      : isActive
+                                      ? "bg-purple-50 text-[#8000ff] reconcile-active"
+                                      : "text-gray-600"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className={`transition-transform duration-300 ${isMatched ? "text-green-500" : "text-gray-300"}`}>
+                                      {isMatched ? "✓" : "›"}
+                                    </span>
+                                    <span>{child.name}</span>
+                                  </div>
+                                  <span className={`font-medium transition-all duration-300 ${childBalance > 0 ? "balance-pop" : "text-gray-300"}`}>
+                                    ${childBalance.toLocaleString()}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+
           </div>
         ) : null}
         </div>
