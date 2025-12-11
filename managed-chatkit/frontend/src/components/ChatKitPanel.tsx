@@ -277,7 +277,7 @@ export function ChatKitPanel() {
       
       {/* Right Panel - White Panel - Only visible when there's content, but space is reserved */}
       {hasContent ? (
-        <div className="flex-1 bg-white shadow-sm transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+        <div className="flex-1 bg-transparent transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           console.log("=== RENDERING RIGHT PANEL ===");
           console.log("invoiceData:", invoiceData);
@@ -287,9 +287,9 @@ export function ChatKitPanel() {
           return null;
         })()}
         {invoiceData ? (
-          <div className="h-full flex flex-col overflow-y-auto">
+          <div className="h-full flex flex-col overflow-y-auto p-4">
             {/* Invoice Details - Realistic Invoice Design */}
-            <div className="invoice-container flex-1 p-8 bg-white my-4">
+            <div className="invoice-container animate-in flex-1 p-8 bg-white my-4 shadow-lg rounded-lg">
               <div className="max-w-2xl mx-auto">
                 {/* Invoice Header Section */}
                 <div className="mb-8 pb-6 border-b-2 border-gray-300">

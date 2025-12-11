@@ -45,11 +45,11 @@ body {
   height: 100vh !important;
 }
 
-/* Invoice torn edge effect */
-@keyframes slideUpFromBottom {
+/* Invoice slide-in animation */
+@keyframes slideInFromBottom {
   from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(100px);
   }
   to {
     opacity: 1;
@@ -58,10 +58,14 @@ body {
 }
 
 .invoice-container {
-  animation: slideUpFromBottom 0.6s ease-out;
   position: relative;
   background: white;
   margin: 20px 0;
+}
+
+/* Smooth slide-in animation for invoice */
+.invoice-container.animate-in {
+  animation: slideInFromBottom 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Hide scrollbar for invoice container and parent */
