@@ -79,10 +79,8 @@ export function DotGridBackground() {
           const maxOpacity = isOnStripe ? 0.45 : 0.12;
           const opacity = minOpacity + twinkle * (maxOpacity - minOpacity);
           
-          ctx.beginPath();
-          ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(100, 100, 100, ${opacity})`;
-          ctx.fill();
+          ctx.fillRect(x - dotRadius, y - dotRadius, dotRadius * 2, dotRadius * 2);
         }
       }
       
