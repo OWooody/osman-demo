@@ -376,7 +376,7 @@ export function ChatKitPanel() {
       
       {/* Right Panel - White Panel - Only visible when there's content, but space is reserved */}
       {hasContent ? (
-        <div className="flex-1 bg-transparent transition-colors pl-6 py-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+        <div className="flex-1 bg-transparent transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           return null;
         })()}
@@ -479,7 +479,7 @@ export function ChatKitPanel() {
             </div>
           </div>
         ) : showReport ? (
-          <div className="h-full flex flex-col overflow-hidden -ml-10">
+          <div className="h-full flex flex-col overflow-hidden -ml-10 -mr-6">
             {/* Header Section */}
             <div className="flex-shrink-0 flex items-start justify-between mb-6 pl-10 pr-6">
               <div className="flex-1">
