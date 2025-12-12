@@ -1,5 +1,44 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   WARM & HUMAN DESIGN SYSTEM
+   A friendly, approachable aesthetic for financial interfaces
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Typography - Friendly, approachable fonts */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU79TR_V.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_KE79TR_V.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_m0n9TR_V.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_okn9TR_V.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Keep OpenAI Sans for ChatKit compatibility */
 @font-face {
   font-family: "OpenAI Sans";
   src: url("https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2") format("woff2");
@@ -8,22 +47,99 @@
   font-display: swap;
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   COLOR PALETTE - Warm & Human
+   ───────────────────────────────────────────────────────────────── */
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
+  /* Primary - Warm Coral/Terracotta */
+  --warm-primary: #E07A5F;
+  --warm-primary-light: #F4A698;
+  --warm-primary-dark: #C35A42;
+
+  /* Secondary - Soft Sage */
+  --warm-sage: #81B29A;
+  --warm-sage-light: #A8D4BC;
+  --warm-sage-dark: #5E9178;
+
+  /* Accent - Warm Gold */
+  --warm-gold: #F2CC8F;
+  --warm-gold-light: #F9E4C4;
+  --warm-gold-dark: #D4A85A;
+
+  /* Neutrals - Warm Grays */
+  --warm-cream: #FAF7F2;
+  --warm-sand: #F5F0E8;
+  --warm-stone: #E8E2D9;
+  --warm-gray-100: #F7F5F2;
+  --warm-gray-200: #EDE9E3;
+  --warm-gray-300: #DDD7CE;
+  --warm-gray-400: #B8B0A4;
+  --warm-gray-500: #948C7F;
+  --warm-gray-600: #6E675C;
+  --warm-gray-700: #4A453D;
+  --warm-gray-800: #2D2A25;
+  --warm-gray-900: #1A1815;
+
+  /* Success/Error - Warm variants */
+  --warm-success: #7AB881;
+  --warm-success-light: #E8F5EA;
+  --warm-error: #D97373;
+  --warm-error-light: #FCEAEA;
+  --warm-warning: #E5A84B;
+  --warm-warning-light: #FDF6E8;
+
+  /* Background & Foreground */
+  --background: var(--warm-cream);
+  --foreground: var(--warm-gray-800);
+
   color-scheme: light;
 }
 
 :root[data-color-scheme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  /* Dark mode - Warm dark tones */
+  --warm-primary: #F4A698;
+  --warm-primary-light: #F9C8BD;
+  --warm-primary-dark: #E07A5F;
+
+  --warm-sage: #A8D4BC;
+  --warm-sage-light: #C8E8D8;
+  --warm-sage-dark: #81B29A;
+
+  --warm-gold: #F9E4C4;
+  --warm-gold-light: #FCF2E0;
+  --warm-gold-dark: #F2CC8F;
+
+  /* Dark neutrals - Warm undertones */
+  --warm-cream: #1C1A17;
+  --warm-sand: #242119;
+  --warm-stone: #2D2A23;
+  --warm-gray-100: #2D2A23;
+  --warm-gray-200: #3D3830;
+  --warm-gray-300: #4D473D;
+  --warm-gray-400: #6E675C;
+  --warm-gray-500: #948C7F;
+  --warm-gray-600: #B8B0A4;
+  --warm-gray-700: #DDD7CE;
+  --warm-gray-800: #F5F0E8;
+  --warm-gray-900: #FAF7F2;
+
+  --warm-success: #A8D4B0;
+  --warm-success-light: #2A3D2D;
+  --warm-error: #F4A0A0;
+  --warm-error-light: #3D2A2A;
+  --warm-warning: #F2CC8F;
+  --warm-warning-light: #3D3520;
+
+  --background: var(--warm-cream);
+  --foreground: var(--warm-gray-800);
+
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-color-scheme]) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1C1A17;
+    --foreground: #F5F0E8;
     color-scheme: dark;
   }
 }
@@ -31,81 +147,119 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Warm color utilities */
+  --color-warm-primary: var(--warm-primary);
+  --color-warm-sage: var(--warm-sage);
+  --color-warm-gold: var(--warm-gold);
+  --color-warm-cream: var(--warm-cream);
+  --color-warm-sand: var(--warm-sand);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 
-/* Invoice slide-in animation */
+/* ─────────────────────────────────────────────────────────────────
+   ANIMATIONS - Natural, Spring-Based Motion
+   ───────────────────────────────────────────────────────────────── */
+
+/* Natural spring easing - feels organic and friendly */
+:root {
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-gentle: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-soft-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Invoice slide-in with gentle bounce */
 @keyframes slideInFromBottom {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(100px);
+    transform: translateY(60px) scale(0.98);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
 .invoice-container {
   position: relative;
-  background: white;
+  background: var(--warm-cream);
   margin: 20px 0;
+  border-radius: 20px;
 }
 
-/* Smooth slide-in animation for invoice */
 .invoice-container.animate-in {
-  animation: slideInFromBottom 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideInFromBottom 1.2s var(--ease-soft-out) forwards;
 }
 
-/* Hide scrollbar for invoice container and parent */
+/* Custom warm scrollbar */
 .h-full.overflow-y-auto::-webkit-scrollbar {
-  display: none;
+  width: 6px;
 }
 
-.h-full.overflow-y-auto {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.h-full.overflow-y-auto::-webkit-scrollbar-track {
+  background: var(--warm-sand);
+  border-radius: 3px;
 }
 
-/* Reconcile animations */
+.h-full.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: var(--warm-gray-300);
+  border-radius: 3px;
+}
+
+.h-full.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--warm-gray-400);
+}
+
+/* Reconcile animations - Warm coral tones */
 @keyframes reconcilePulse {
   0%, 100% {
-    box-shadow: inset 0 0 0 1px rgba(128, 0, 255, 0.3);
+    box-shadow:
+      inset 0 0 0 1px rgba(224, 122, 95, 0.3),
+      0 4px 12px rgba(224, 122, 95, 0.1);
   }
   50% {
-    box-shadow: inset 0 0 0 2px rgba(128, 0, 255, 0.6);
+    box-shadow:
+      inset 0 0 0 2px rgba(224, 122, 95, 0.5),
+      0 8px 24px rgba(224, 122, 95, 0.2);
   }
 }
 
 @keyframes reconcileMatch {
   0% {
-    background-color: rgba(128, 0, 255, 0.1);
-    opacity: 0.8;
+    background-color: rgba(224, 122, 95, 0.15);
+    transform: scale(1);
   }
-  50% {
-    background-color: rgba(34, 197, 94, 0.3);
-    opacity: 1;
+  40% {
+    background-color: rgba(129, 178, 154, 0.25);
+    transform: scale(1.02);
   }
   100% {
-    background-color: rgba(34, 197, 94, 0.1);
-    opacity: 1;
+    background-color: rgba(129, 178, 154, 0.12);
+    transform: scale(1);
   }
 }
 
 @keyframes slideInRight {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(24px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateX(0);
   }
@@ -114,48 +268,257 @@ body {
 @keyframes numberPop {
   0% {
     opacity: 0.5;
-    color: rgb(34, 197, 94);
+    color: var(--warm-sage);
+    transform: scale(0.95);
   }
   50% {
     opacity: 1;
-    color: rgb(22, 163, 74);
+    color: var(--warm-sage-dark);
+    transform: scale(1.08);
   }
   100% {
     opacity: 1;
-    color: rgb(34, 197, 94);
+    color: var(--warm-sage);
+    transform: scale(1);
   }
 }
 
 .reconcile-active {
-  animation: reconcilePulse 1.5s ease-in-out infinite;
+  animation: reconcilePulse 2s ease-in-out infinite;
 }
 
 .reconcile-matched {
-  animation: reconcileMatch 0.5s ease-out forwards;
+  animation: reconcileMatch 0.6s var(--ease-spring) forwards;
 }
 
 .reconcile-row {
-  animation: slideInRight 0.3s ease-out forwards;
+  animation: slideInRight 0.4s var(--ease-soft-out) forwards;
 }
 
 .balance-pop {
-  animation: numberPop 0.3s ease-out;
+  animation: numberPop 0.4s var(--ease-spring);
+  display: inline-block;
 }
 
-/* Reconcile container fade in */
+/* Fade animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 .reconcile-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.6s var(--ease-gentle) forwards;
 }
 
 .report-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
+  animation: fadeInScale 0.8s var(--ease-gentle) forwards;
+}
+
+/* Gentle breathing effect for organic feel */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+/* Floating blob animation for backgrounds */
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(15px, -20px) rotate(2deg);
+  }
+  66% {
+    transform: translate(-10px, 10px) rotate(-1deg);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20px, 15px) scale(1.05);
+  }
+}
+
+/* Warm card hover effects */
+.warm-card {
+  transition: all 0.3s var(--ease-gentle);
+  box-shadow: 0 2px 8px rgba(45, 42, 37, 0.06);
+}
+
+.warm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45, 42, 37, 0.1);
+}
+
+/* Panel slide-in animation */
+@keyframes slideInFromRightWarm {
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.panel-slide-in {
+  animation: slideInFromRightWarm 0.5s var(--ease-soft-out) forwards;
+}
+
+/* Stagger children animation helper */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s var(--ease-gentle) forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+
+/* ─────────────────────────────────────────────────────────────────
+   MICRO-INTERACTIONS - Enhanced User Feedback
+   ───────────────────────────────────────────────────────────────── */
+
+/* Dark mode toggle icon rotation */
+.dark-toggle-icon {
+  transition: transform 0.5s var(--ease-spring);
+}
+
+.dark-toggle-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Panel exit animation */
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+.panel-slide-out {
+  animation: slideOutToRight 0.3s var(--ease-gentle) forwards;
+}
+
+/* Checkmark draw animation for SVG */
+@keyframes checkmarkDraw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.checkmark-draw path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: checkmarkDraw 0.4s var(--ease-spring) forwards;
+}
+
+/* Progress bar shimmer effect */
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* Table row hover with lift effect */
+.table-row-hover {
+  transition: all 0.2s var(--ease-gentle);
+  cursor: default;
+}
+
+.table-row-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 42, 37, 0.08);
+  background: var(--warm-sand) !important;
+}
+
+/* Scale pop for success states */
+@keyframes scalePop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-pop {
+  animation: scalePop 0.4s var(--ease-spring) forwards;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
 }
