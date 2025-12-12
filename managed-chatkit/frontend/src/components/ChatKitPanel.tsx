@@ -199,14 +199,14 @@ export function ChatKitPanel() {
           fontSources: [
             {
               family: "Plus Jakarta Sans",
-              src: "https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU79TR_V.woff2",
+              src: "https://cdn.jsdelivr.net/fontsource/fonts/plus-jakarta-sans@latest/latin-400-normal.woff2",
               weight: 400,
               style: "normal",
               display: "swap",
             },
             {
               family: "Plus Jakarta Sans",
-              src: "https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_m0n9TR_V.woff2",
+              src: "https://cdn.jsdelivr.net/fontsource/fonts/plus-jakarta-sans@latest/latin-600-normal.woff2",
               weight: 600,
               style: "normal",
               display: "swap",
