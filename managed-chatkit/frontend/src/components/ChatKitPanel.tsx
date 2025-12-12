@@ -186,6 +186,7 @@ export function ChatKitPanel() {
         },
       },
       composer: {
+        placeholder: '',
         attachments: {
           enabled: true,
           maxCount: 5,
