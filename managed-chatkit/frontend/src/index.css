@@ -155,3 +155,7 @@ body {
 .reconcile-fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+.report-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}

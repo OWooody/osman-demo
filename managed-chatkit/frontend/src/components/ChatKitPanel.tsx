@@ -481,7 +481,7 @@ export function ChatKitPanel() {
         ) : showReport ? (
           <div className="h-full flex flex-col overflow-hidden -ml-10 -mr-6">
             {/* Header Section */}
-            <div className="flex-shrink-0 flex items-start justify-between mb-6 pl-10 pr-6">
+            <div className="flex-shrink-0 flex items-start justify-between mb-6 pl-10 pr-6 report-fade-in">
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">Profit & Loss</h2>
                 <div className="text-4xl font-semibold text-[#8000ff] mb-1">
@@ -530,13 +530,15 @@ export function ChatKitPanel() {
                     strokeWidth={2.5}
                     fill="url(#profitGradient)"
                     baseValue={0}
-                    isAnimationActive={false}
+                    isAnimationActive={true}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                   />
                 </AreaChart>
               </ResponsiveContainer>
               
               {/* Footer Section - Overlaid on chart */}
-              <div className="absolute bottom-0 left-0 right-0 pl-10 pr-6 pb-6 pt-3">
+              <div className="absolute bottom-0 left-0 right-0 pl-10 pr-6 pb-6 pt-3 report-fade-in">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-700">Revenue</span>
                   <span className="text-sm font-medium text-gray-900">
