@@ -159,7 +159,7 @@ export function ChatKitPanel() {
       },
       theme: {
         colorScheme: "light",
-        radius: "pill",
+        radius: 'sharp',
         density: "normal",
         color: {
           accent: {
