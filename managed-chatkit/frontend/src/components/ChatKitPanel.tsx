@@ -7,8 +7,8 @@ import { DotGridBackground } from "./DotGridBackground";
 
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
-  const [showReconcile, setShowReconcile] = useState(false);
-  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [showReconcile, setShowReconcile] = useState(true);
+  const [invoiceData, setInvoiceData] = useState<any>(false);
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
 
   const getClientSecret = useMemo(
@@ -381,10 +381,10 @@ export function ChatKitPanel() {
           return null;
         })()}
         {invoiceData ? (
-          <div className="h-full flex flex-col overflow-y-auto p-4">
+          <div className="h-full flex flex-col overflow-y-auto p-4 -ml-4">
             {/* Invoice Details - Realistic Invoice Design */}
             <div className="invoice-container animate-in flex-1 p-8 bg-white my-4 shadow-lg rounded-lg">
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-2xl">
                 {/* Invoice Header Section */}
                 <div className="mb-8 pb-6 border-b-2 border-gray-300">
                   <div className="flex justify-between items-start mb-6">
