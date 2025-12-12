@@ -553,7 +553,7 @@ export function ChatKitPanel() {
             </div>
           </div>
         ) : showReconcile ? (
-          <div className="h-full flex flex-col overflow-hidden space-y-4 -ml-4 pb-6">
+          <div className="h-full flex flex-col overflow-hidden space-y-4 -ml-4 pb-6 reconcile-fade-in">
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>
