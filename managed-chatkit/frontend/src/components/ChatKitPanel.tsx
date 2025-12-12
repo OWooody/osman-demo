@@ -196,11 +196,6 @@ export function ChatKitPanel() {
             prompt: "Reconcile my bank account",
           },
           {
-            icon: "notebook",
-            label: "Categorize my business expenses",
-            prompt: "Categorize my business expenses",
-          },
-          {
             icon: "calendar",
             label: "Track my bills and due dates",
             prompt: "Track my bills and due dates",
