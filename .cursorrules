@@ -1,0 +1,43 @@
+# Cursor Rules
+
+This project uses `CLAUDE.md` as the primary source of truth for AI coding assistance.
+
+## Instructions
+
+**Always read and follow the guidelines in `CLAUDE.md` at the root of this repository.**
+
+The CLAUDE.md file contains:
+- Project overview and architecture
+- Tech stack details (React 19, Vite 7, FastAPI, Tailwind CSS 4, shadcn/ui)
+- Development commands and environment variables
+- ChatKit documentation references (check `chatkit-js/` submodule)
+- Code standards and patterns
+- Component architecture guidelines (CVA, forwardRef, cn())
+- Animation best practices (Framer Motion, CSS)
+- Accessibility requirements (WCAG 2.1 AA)
+- Performance standards (60fps animations)
+
+## Quick Reference
+
+```bash
+# Development
+cd managed-chatkit && npm install && npm run dev
+
+# Frontend only
+cd managed-chatkit/frontend && npm run dev
+
+# Backend only  
+cd managed-chatkit/backend && ./scripts/run.sh
+```
+
+## Key Rules
+
+1. **Check `chatkit-js/` submodule** before writing any ChatKit-related code
+2. **Follow shadcn/ui patterns** — CVA variants, forwardRef, cn() utility
+3. **Accessibility first** — keyboard nav, screen readers, reduced motion support
+4. **60fps animations** — use transform/opacity, avoid layout-triggering properties
+5. **Complete implementations** — no TODOs or placeholders
+6. **Be concise** — minimize prose, maximize working code
+
+@file:CLAUDE.md
+
