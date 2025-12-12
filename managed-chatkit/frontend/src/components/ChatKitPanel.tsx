@@ -4,6 +4,7 @@ import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { OrganicBackground } from "./OrganicBackground";
+import { AnimatedNumber } from "./shared/AnimatedNumber";
 
 // Warm color palette - matching our design system
 const WARM_COLORS = {
@@ -602,7 +603,7 @@ export function ChatKitPanel() {
                       ]).map((item: any, index: number) => (
                         <tr
                           key={index}
-                          className="transition-colors hover:bg-opacity-50"
+                          className="table-row-hover"
                           style={{
                             borderBottom: `1px solid ${WARM_COLORS.stone}`,
                             background: index % 2 === 0 ? 'transparent' : WARM_COLORS.sand,
@@ -651,7 +652,11 @@ export function ChatKitPanel() {
                         className="text-2xl font-bold"
                         style={{ color: WARM_COLORS.primary }}
                       >
-                        {invoiceData.currency || 'SAR'} {(invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500).toLocaleString()}
+                        <AnimatedNumber
+                          value={invoiceData.amount || invoiceData.total || invoiceData.totalAmount || 12500}
+                          prefix={`${invoiceData.currency || 'SAR'} `}
+                          duration={800}
+                        />
                       </span>
                     </div>
                   </div>
@@ -696,7 +701,7 @@ export function ChatKitPanel() {
                   className="text-4xl font-bold mb-1"
                   style={{ color: WARM_COLORS.primary }}
                 >
-                  {currentProfit.toLocaleString()}
+                  <AnimatedNumber value={currentProfit} duration={1000} />
                 </div>
                 <div
                   className="text-sm font-medium flex items-center gap-2"
@@ -853,7 +858,7 @@ export function ChatKitPanel() {
                   className="w-2 h-2 rounded-full animate-pulse"
                   style={{ background: WARM_COLORS.primary }}
                 />
-                {Math.round(reconciliationProgress)}% complete
+                <AnimatedNumber value={Math.round(reconciliationProgress)} duration={400} suffix="% complete" />
               </div>
             </div>
 
@@ -1094,7 +1099,12 @@ export function ChatKitPanel() {
                   Available Balance
                 </p>
                 <p className="text-white text-2xl font-semibold tracking-tight">
-                  SAR {(52840.00 - paidAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  <AnimatedNumber
+                    value={52840.00 - paidAmount}
+                    prefix="SAR "
+                    decimals={2}
+                    duration={600}
+                  />
                 </p>
               </div>
               <div className="mt-auto pt-3 flex items-center justify-between">
@@ -1151,7 +1161,7 @@ export function ChatKitPanel() {
               style={{ background: WARM_COLORS.stone }}
             >
               <div
-                className="h-full rounded-full transition-all duration-700 ease-out"
+                className="h-full rounded-full transition-all duration-700 ease-out progress-shimmer"
                 style={{
                   width: `${(paidBillIds.length / billsToPay.length) * 100}%`,
                   background: `linear-gradient(90deg, ${WARM_COLORS.sage}, ${WARM_COLORS.sageLight})`,
@@ -1198,7 +1208,7 @@ export function ChatKitPanel() {
                         }}
                       >
                         {isPaid ? (
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 text-white checkmark-draw scale-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                           </svg>
                         ) : isProcessing ? (

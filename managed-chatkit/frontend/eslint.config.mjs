@@ -8,7 +8,7 @@ import { URL } from "node:url";
 
 export default [
   {
-    ignores: ["node_modules/**", "dist/**", ".next/**"],
+    ignores: ["node_modules/**", "dist/**", ".next/**", ".venv/**"],
   },
   js.configs.recommended,
   {

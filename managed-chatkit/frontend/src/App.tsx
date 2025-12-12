@@ -34,7 +34,7 @@ export default function App() {
       >
         {isDark ? (
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 dark-toggle-icon rotate"
             fill="currentColor"
             viewBox="0 0 20 20"
             style={{ color: WARM_COLORS.gold }}
@@ -47,7 +47,7 @@ export default function App() {
           </svg>
         ) : (
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 dark-toggle-icon"
             fill="currentColor"
             viewBox="0 0 20 20"
             style={{ color: WARM_COLORS.primary }}

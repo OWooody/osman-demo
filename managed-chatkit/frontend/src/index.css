@@ -407,6 +407,110 @@ body {
 .stagger-children > *:nth-child(7) { animation-delay: 300ms; }
 .stagger-children > *:nth-child(8) { animation-delay: 350ms; }
 
+/* ─────────────────────────────────────────────────────────────────
+   MICRO-INTERACTIONS - Enhanced User Feedback
+   ───────────────────────────────────────────────────────────────── */
+
+/* Dark mode toggle icon rotation */
+.dark-toggle-icon {
+  transition: transform 0.5s var(--ease-spring);
+}
+
+.dark-toggle-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Panel exit animation */
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+.panel-slide-out {
+  animation: slideOutToRight 0.3s var(--ease-gentle) forwards;
+}
+
+/* Checkmark draw animation for SVG */
+@keyframes checkmarkDraw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.checkmark-draw path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: checkmarkDraw 0.4s var(--ease-spring) forwards;
+}
+
+/* Progress bar shimmer effect */
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* Table row hover with lift effect */
+.table-row-hover {
+  transition: all 0.2s var(--ease-gentle);
+  cursor: default;
+}
+
+.table-row-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 42, 37, 0.08);
+  background: var(--warm-sand) !important;
+}
+
+/* Scale pop for success states */
+@keyframes scalePop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-pop {
+  animation: scalePop 0.4s var(--ease-spring) forwards;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *,
