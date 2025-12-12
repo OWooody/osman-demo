@@ -182,7 +182,7 @@ export function ChatKitPanel() {
       },
       theme: {
         colorScheme: "light",
-        radius: 'rounded',  // Softer, more approachable corners
+        radius: 'round',  // Softer, more approachable corners
         density: "normal",
         color: {
           accent: {
