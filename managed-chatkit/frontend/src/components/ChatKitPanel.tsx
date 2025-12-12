@@ -7,7 +7,7 @@ import { DotGridBackground } from "./DotGridBackground";
 
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
-  const [showReconcile, setShowReconcile] = useState(true);
+  const [showReconcile, setShowReconcile] = useState(false);
   const [invoiceData, setInvoiceData] = useState<any>(false);
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
 
@@ -376,12 +376,12 @@ export function ChatKitPanel() {
       
       {/* Right Panel - White Panel - Only visible when there's content, but space is reserved */}
       {hasContent ? (
-        <div className="flex-1 bg-transparent transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+        <div className="flex-1 bg-transparent transition-colors pt-6 px-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           return null;
         })()}
         {invoiceData ? (
-          <div className="h-full flex flex-col overflow-y-auto p-4 -ml-4">
+          <div className="h-full flex flex-col overflow-y-auto p-4 pb-6 -ml-4">
             {/* Invoice Details - Realistic Invoice Design */}
             <div className="invoice-container animate-in flex-1 p-8 bg-white my-4 shadow-lg rounded-lg">
               <div className="max-w-2xl">
@@ -496,12 +496,12 @@ export function ChatKitPanel() {
               </div>
             </div>
 
-            {/* Chart Section */}
-            <div className="flex-1 min-h-0 mb-6">
+            {/* Chart Section with Overlaid Footer */}
+            <div className="flex-1 min-h-0 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={profitLossData}
-                  margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+                  margin={{ top: 0, right: 0, left: -20, bottom: -50 }}
                 >
                   <defs>
                     <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
@@ -534,26 +534,26 @@ export function ChatKitPanel() {
                   />
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
-
-            {/* Footer Section */}
-            <div className="flex-shrink-0 border-t border-gray-100 pt-4 pl-10 pr-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-700">Revenue</span>
-                <span className="text-sm font-medium text-gray-900">
-                  SAR {currentRevenue.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Expenses</span>
-                <span className="text-sm font-medium text-gray-900">
-                  SAR {currentExpenses.toLocaleString()}
-                </span>
+              
+              {/* Footer Section - Overlaid on chart */}
+              <div className="absolute bottom-0 left-0 right-0 pl-10 pr-6 pb-6 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-700">Revenue</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    SAR {currentRevenue.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Expenses</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    SAR {currentExpenses.toLocaleString()}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         ) : showReconcile ? (
-          <div className="h-full flex flex-col overflow-hidden space-y-4 -ml-4">
+          <div className="h-full flex flex-col overflow-hidden space-y-4 -ml-4 pb-6">
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>
@@ -665,7 +665,7 @@ export function ChatKitPanel() {
         ) : null}
         </div>
       ) : (
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative overflow-hidden pb-6">
           <DotGridBackground />
         </div>
       )}
