@@ -70,19 +70,23 @@ export function DotGridBackground() {
       // Clear
       ctx.clearRect(0, 0, rect.width, rect.height);
       
-      // Draw dots
-      const cols = Math.ceil(rect.width / spacing) + 1;
-      const rows = Math.ceil(rect.height / spacing) + 1;
+      // Draw dots with padding on all sides
+      const padding = spacing;
+      const cols = Math.floor((rect.width - padding * 2) / spacing);
+      const rows = Math.floor((rect.height - padding * 2) / spacing);
       
       const elapsed = (performance.now() - startTime) / 1000;
       
-      // Dot color based on dark mode
-      const dotColor = isDark ? '180, 180, 180' : '100, 100, 100';
+      // Dot color based on dark mode - warm coral theme
+      const dotColor = isDark ? '244, 166, 152' : '224, 122, 95';
       
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          const x = col * spacing;
-          const y = row * spacing;
+      for (let row = 0; row <= rows; row++) {
+        for (let col = 0; col <= cols; col++) {
+          const x = padding + col * spacing;
+          const y = padding + row * spacing;
+          
+          // Skip dots that would be too close to edges
+          if (x > rect.width - padding || y > rect.height - padding) continue;
           
           // Check if on diagonal stripe
           const isOnStripe = (row + col) % diagonalSpacing === 0;
@@ -117,23 +121,11 @@ export function DotGridBackground() {
     };
   }, [isDark]);
 
-  const bgColor = isDark ? '#0a0a0a' : '#fafafa';
-
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-25">
       <canvas
         ref={canvasRef}
         style={{ width: '100%', height: '100%' }}
-      />
-      {/* Gradient fade overlay on all edges */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            linear-gradient(to right, ${bgColor} 0%, transparent 15%, transparent 85%, ${bgColor} 100%),
-            linear-gradient(to bottom, ${bgColor} 0%, transparent 15%, transparent 85%, ${bgColor} 100%)
-          `,
-        }}
       />
     </div>
   );

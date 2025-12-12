@@ -3,8 +3,8 @@ import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-import { OrganicBackground } from "./OrganicBackground";
 import { AnimatedNumber } from "./shared/AnimatedNumber";
+import { DotGridBackground } from "./DotGridBackground";
 
 // Warm color palette - matching our design system
 const WARM_COLORS = {
@@ -1282,7 +1282,7 @@ export function ChatKitPanel() {
         </div>
       ) : (
         <div className="flex-1 relative overflow-hidden pb-6 rounded-3xl">
-          <OrganicBackground />
+          <DotGridBackground />
         </div>
       )}
     </div>
