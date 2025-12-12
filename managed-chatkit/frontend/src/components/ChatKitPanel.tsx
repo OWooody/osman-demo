@@ -6,7 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 import { DotGridBackground } from "./DotGridBackground";
 
 export function ChatKitPanel() {
-  const [showReport, setShowReport] = useState(false);
+  const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
   const [invoiceData, setInvoiceData] = useState<any>(null);
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
@@ -376,7 +376,7 @@ export function ChatKitPanel() {
       
       {/* Right Panel - White Panel - Only visible when there's content, but space is reserved */}
       {hasContent ? (
-        <div className="flex-1 bg-transparent transition-colors p-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+        <div className="flex-1 bg-transparent transition-colors pl-6 py-6 overflow-visible animate-in slide-in-from-right duration-300" style={{ fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
         {(() => {
           return null;
         })()}
@@ -479,9 +479,9 @@ export function ChatKitPanel() {
             </div>
           </div>
         ) : showReport ? (
-          <div className="h-full flex flex-col overflow-visible">
+          <div className="h-full flex flex-col overflow-hidden -ml-10">
             {/* Header Section */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="flex-shrink-0 flex items-start justify-between mb-6 pl-10 pr-6">
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">Profit & Loss</h2>
                 <div className="text-4xl font-semibold text-[#8000ff] mb-1">
@@ -497,8 +497,8 @@ export function ChatKitPanel() {
             </div>
 
             {/* Chart Section */}
-            <div className="flex-1 min-h-0 mb-6" style={{ marginLeft: '-1.5rem', marginRight: '-1.5rem', width: 'calc(100% + 3rem)' }}>
-              <ResponsiveContainer width="100%" height="100%" style={{ padding: 0, margin: 0 }}>
+            <div className="flex-1 min-h-0 mb-6">
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={profitLossData}
                   margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
@@ -537,7 +537,7 @@ export function ChatKitPanel() {
             </div>
 
             {/* Footer Section */}
-            <div className="border-t border-gray-100 pt-4">
+            <div className="flex-shrink-0 border-t border-gray-100 pt-4 pl-10 pr-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-700">Revenue</span>
                 <span className="text-sm font-medium text-gray-900">

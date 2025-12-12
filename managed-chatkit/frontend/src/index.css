@@ -41,9 +41,6 @@ body {
   font-family: var(--font-sans);
 }
 
-.recharts-wrapper {
-  height: 100vh !important;
-}
 
 /* Invoice slide-in animation */
 @keyframes slideInFromBottom {

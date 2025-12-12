@@ -27,7 +27,7 @@ export default function App() {
         )}
       </button>
       
-      <div className="mx-auto w-full max-w-[90%]">
+      <div className="w-full pl-[5%]">
         <ChatKitPanel />
       </div>
     </main>
