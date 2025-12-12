@@ -23,6 +23,11 @@ const WARM_COLORS = {
   gray800: "#2D2A25",
 };
 
+// Helper to add hex alpha to a color (e.g., withOpacity("#F4A698", "40") => "#F4A69840")
+function withOpacity(color: string, alpha: string): string {
+  return `${color}${alpha}`;
+}
+
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
@@ -666,7 +671,7 @@ export function ChatKitPanel() {
                 <div
                   className="pt-6 px-4 py-4 rounded-xl"
                   style={{
-                    background: `linear-gradient(135deg, ${WARM_COLORS.sageLight}20, ${WARM_COLORS.goldLight}30)`,
+                    background: `linear-gradient(135deg, ${withOpacity(WARM_COLORS.sageLight, '20')}, ${withOpacity(WARM_COLORS.goldLight, '30')})`,
                     borderTop: `1px solid ${WARM_COLORS.stone}`,
                   }}
                 >
@@ -710,7 +715,7 @@ export function ChatKitPanel() {
                   <span
                     className="inline-flex items-center px-2 py-0.5 rounded-full text-xs"
                     style={{
-                      background: profitChange >= 0 ? WARM_COLORS.sageLight + '40' : WARM_COLORS.primaryLight + '40',
+                      background: profitChange >= 0 ? withOpacity(WARM_COLORS.sageLight, '40') : withOpacity(WARM_COLORS.primaryLight, '40'),
                       color: profitChange >= 0 ? WARM_COLORS.sageDark : WARM_COLORS.primaryDark,
                     }}
                   >
@@ -849,9 +854,9 @@ export function ChatKitPanel() {
               <div
                 className="px-4 py-2 rounded-2xl text-sm font-semibold flex items-center gap-2"
                 style={{
-                  background: `linear-gradient(135deg, ${WARM_COLORS.primaryLight}30, ${WARM_COLORS.goldLight}50)`,
+                  background: `linear-gradient(135deg, ${withOpacity(WARM_COLORS.primaryLight, '30')}, ${withOpacity(WARM_COLORS.goldLight, '50')})`,
                   color: WARM_COLORS.primary,
-                  border: `1px solid ${WARM_COLORS.primaryLight}40`,
+                  border: `1px solid ${withOpacity(WARM_COLORS.primaryLight, '40')}`,
                 }}
               >
                 <div
@@ -899,9 +904,9 @@ export function ChatKitPanel() {
                         }`}
                         style={{
                           background: isMatched
-                            ? WARM_COLORS.sageLight + '30'
+                            ? withOpacity(WARM_COLORS.sageLight, '30')
                             : isActive
-                            ? WARM_COLORS.primaryLight + '20'
+                            ? withOpacity(WARM_COLORS.primaryLight, '20')
                             : WARM_COLORS.cream,
                           border: `1px solid ${
                             isMatched
@@ -911,7 +916,7 @@ export function ChatKitPanel() {
                               : WARM_COLORS.stone
                           }`,
                           boxShadow: isActive
-                            ? `0 4px 16px ${WARM_COLORS.primary}20`
+                            ? `0 4px 16px ${withOpacity(WARM_COLORS.primary, '20')}`
                             : '0 1px 3px rgba(45, 42, 37, 0.05)',
                           animationDelay: `${index * 50}ms`,
                         }}
@@ -1017,13 +1022,13 @@ export function ChatKitPanel() {
                                   }`}
                                   style={{
                                     background: isMatched
-                                      ? WARM_COLORS.sageLight + '25'
+                                      ? withOpacity(WARM_COLORS.sageLight, '25')
                                       : isActive
-                                      ? WARM_COLORS.primaryLight + '15'
+                                      ? withOpacity(WARM_COLORS.primaryLight, '15')
                                       : 'transparent',
                                     borderBottom:
-                                      childIndex < section.children!.length - 1
-                                        ? `1px solid ${WARM_COLORS.stone}50`
+                                      childIndex < (section.children?.length ?? 0) - 1
+                                        ? `1px solid ${withOpacity(WARM_COLORS.stone, '50')}`
                                         : 'none',
                                   }}
                                 >
@@ -1069,7 +1074,7 @@ export function ChatKitPanel() {
             <div
               className="rounded-3xl p-6 mb-6 max-w-[340px] aspect-[1.586/1] flex flex-col"
               style={{
-                background: `linear-gradient(135deg, ${WARM_COLORS.gray800} 0%, ${WARM_COLORS.gray700} 50%, ${WARM_COLORS.primaryDark}40 100%)`,
+                background: `linear-gradient(135deg, ${WARM_COLORS.gray800} 0%, ${WARM_COLORS.gray700} 50%, ${withOpacity(WARM_COLORS.primaryDark, '40')} 100%)`,
                 boxShadow: '0 12px 40px rgba(45, 42, 37, 0.2), 0 4px 12px rgba(45, 42, 37, 0.1)',
               }}
             >
@@ -1180,7 +1185,7 @@ export function ChatKitPanel() {
                     className="flex items-center justify-between p-4 rounded-2xl transition-all duration-500"
                     style={{
                       background: isPaid
-                        ? WARM_COLORS.sageLight + '30'
+                        ? withOpacity(WARM_COLORS.sageLight, '30')
                         : isProcessing
                         ? WARM_COLORS.cream
                         : WARM_COLORS.sand,
@@ -1192,7 +1197,7 @@ export function ChatKitPanel() {
                           : WARM_COLORS.stone
                       }`,
                       boxShadow: isProcessing
-                        ? `0 8px 24px ${WARM_COLORS.primary}15`
+                        ? `0 8px 24px ${withOpacity(WARM_COLORS.primary, '15')}`
                         : '0 2px 8px rgba(45, 42, 37, 0.04)',
                     }}
                   >
