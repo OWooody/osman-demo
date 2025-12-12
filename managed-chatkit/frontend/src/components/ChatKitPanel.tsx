@@ -322,9 +322,14 @@ export function ChatKitPanel() {
                     setShowReport(false); // Hide report if showing
                   } else if (action.type === "request.discard") {
                     successMessage = "✓ Discard";
+                  } else if (action.type === "bills.pay") {
+                    // Don't send any message for bills.pay
+                    successMessage = "";
                   }
 
-                  await chatkit.sendUserMessage({ text: successMessage });
+                  if (successMessage) {
+                    await chatkit.sendUserMessage({ text: successMessage });
+                  }
                 } catch (error) {
                   console.error("Error sending success message:", error);
                 }
@@ -741,7 +746,7 @@ export function ChatKitPanel() {
               </div>
               <div className="mt-auto pt-3 flex items-center justify-between">
                 <p className="text-slate-500 text-xs tracking-widest">•••• 4892</p>
-                <p className="text-slate-400 text-[10px]">Riyad Bank</p>
+                <p className="text-slate-400 text-[10px]">Corporate Bank</p>
               </div>
             </div>
 
