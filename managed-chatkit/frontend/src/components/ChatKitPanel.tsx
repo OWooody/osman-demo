@@ -343,11 +343,6 @@ export function ChatKitPanel() {
   const chatkit = useChatKit(options);
   chatkitRef.current = chatkit;
 
-  // TEST: Trigger reconcile on page load
-  useEffect(() => {
-    setShowReconcile(true);
-  }, []);
-
   // Drive reconciliation animation
   useEffect(() => {
     if (!showReconcile) {
