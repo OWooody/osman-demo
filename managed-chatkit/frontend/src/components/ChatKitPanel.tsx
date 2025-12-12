@@ -8,8 +8,10 @@ import { DotGridBackground } from "./DotGridBackground";
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
+  const [showBillsPaying, setShowBillsPaying] = useState(false);
   const [invoiceData, setInvoiceData] = useState<any>(false);
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
+  const [paidBillIds, setPaidBillIds] = useState<string[]>([]);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -94,6 +96,32 @@ export function ChatKitPanel() {
   const reconciliationSequence = useMemo(
     () => reconciliationTransactions.map((tx) => tx.id),
     [reconciliationTransactions]
+  );
+
+  // Bills data for payment simulation
+  const billsToPay = useMemo(
+    () => [
+      { id: "bill-1", vendor: "AWS", account: "****3847", amount: 4235.00 },
+      { id: "bill-2", vendor: "Microsoft 365", account: "****9012", amount: 1299.00 },
+      { id: "bill-3", vendor: "Electricity for Dec", account: "****5521", amount: 847.50 },
+      { id: "bill-4", vendor: "Slack", account: "****7734", amount: 425.00 },
+    ],
+    []
+  );
+
+  const billsSequence = useMemo(
+    () => billsToPay.map((bill) => bill.id),
+    [billsToPay]
+  );
+
+  const totalBillsAmount = useMemo(
+    () => billsToPay.reduce((sum, bill) => sum + bill.amount, 0),
+    [billsToPay]
+  );
+
+  const paidAmount = useMemo(
+    () => billsToPay.filter(b => paidBillIds.includes(b.id)).reduce((sum, bill) => sum + bill.amount, 0),
+    [billsToPay, paidBillIds]
   );
 
   const activeTransactionId =
@@ -328,6 +356,13 @@ export function ChatKitPanel() {
             // Clear invoice if discarded
             setInvoiceData(null);
             console.log("Invoice data cleared");
+          } else if (action.type === "bills.pay") {
+            console.log("=== BILLS.PAY TRIGGERED ===");
+            setShowBillsPaying(true);
+            setShowReport(false);
+            setShowReconcile(false);
+            setInvoiceData(null);
+            setPaidBillIds([]);
           }
         },
       },
@@ -364,8 +399,28 @@ export function ChatKitPanel() {
     return () => clearInterval(intervalId);
   }, [reconciliationSequence, showReconcile]);
 
+  // Drive bills payment animation
+  useEffect(() => {
+    if (!showBillsPaying) return;
+    setPaidBillIds([]);
+
+    let step = 0;
+    const intervalId = setInterval(() => {
+      const nextId = billsSequence[step];
+      if (nextId) {
+        setPaidBillIds((prev) => prev.includes(nextId) ? prev : [...prev, nextId]);
+      }
+      step += 1;
+      if (step >= billsSequence.length) {
+        clearInterval(intervalId);
+      }
+    }, 1800);
+
+    return () => clearInterval(intervalId);
+  }, [billsSequence, showBillsPaying]);
+
   // Determine if right panel should be visible
-  const hasContent = invoiceData || showReport || showReconcile;
+  const hasContent = invoiceData || showReport || showReconcile || showBillsPaying;
 
   return (
     <div className="flex h-[95vh] w-full gap-4">
@@ -662,6 +717,117 @@ export function ChatKitPanel() {
               </div>
             </div>
 
+
+          </div>
+        ) : showBillsPaying ? (
+          <div className="h-full flex flex-col -ml-4 pb-6">
+            {/* Bank Card Header */}
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-5 mb-6 shadow-xl max-w-[320px] aspect-[1.586/1] flex flex-col">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-slate-400 text-[10px] font-medium tracking-wider uppercase">Paying from</p>
+                  <p className="text-white text-sm font-semibold mt-0.5">Business Account</p>
+                </div>
+                <div className="flex gap-1">
+                  <div className="w-6 h-6 rounded-full bg-red-500 opacity-80" />
+                  <div className="w-6 h-6 rounded-full bg-amber-400 opacity-80 -ml-3" />
+                </div>
+              </div>
+              <div className="space-y-0.5 mt-3">
+                <p className="text-slate-400 text-[10px]">Available Balance</p>
+                <p className="text-white text-xl font-light tracking-tight">
+                  SAR {(52840.00 - paidAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+              <div className="mt-auto pt-3 flex items-center justify-between">
+                <p className="text-slate-500 text-xs tracking-widest">•••• 4892</p>
+                <p className="text-slate-400 text-[10px]">Riyad Bank</p>
+              </div>
+            </div>
+
+            {/* Payment Summary */}
+            <div className="flex items-center justify-between mb-4 px-1">
+              <div>
+                <p className="text-slate-500 text-xs uppercase tracking-wide">Total Payment</p>
+                <p className="text-slate-900 text-2xl font-semibold">
+                  SAR {totalBillsAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-slate-500 text-xs uppercase tracking-wide">Status</p>
+                <p className={`text-sm font-medium ${paidBillIds.length === billsToPay.length ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {paidBillIds.length === billsToPay.length ? 'Complete' : `${paidBillIds.length} of ${billsToPay.length}`}
+                </p>
+              </div>
+            </div>
+
+            {/* Progress Line */}
+            <div className="h-1 bg-slate-100 rounded-full mb-6 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${(paidBillIds.length / billsToPay.length) * 100}%` }}
+              />
+            </div>
+
+            {/* Bills List */}
+            <div className="flex-1 overflow-auto space-y-3">
+              {billsToPay.map((bill, index) => {
+                const isPaid = paidBillIds.includes(bill.id);
+                const isProcessing = !isPaid && paidBillIds.length === index;
+                return (
+                  <div
+                    key={bill.id}
+                    className={`flex items-center justify-between p-4 rounded-xl transition-all duration-500 ${
+                      isPaid
+                        ? "bg-emerald-50 border border-emerald-100"
+                        : isProcessing
+                        ? "bg-white border border-slate-200 shadow-lg shadow-slate-200/50"
+                        : "bg-white border border-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                        isPaid
+                          ? "bg-emerald-500"
+                          : isProcessing
+                          ? "bg-slate-900"
+                          : "bg-slate-100"
+                      }`}>
+                        {isPaid ? (
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : isProcessing ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <p className={`font-medium transition-colors duration-300 ${isPaid ? "text-emerald-900" : "text-slate-900"}`}>
+                          {bill.vendor}
+                        </p>
+                        <p className="text-slate-400 text-sm">{bill.account}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-semibold tabular-nums transition-colors duration-300 ${
+                        isPaid ? "text-emerald-600" : isProcessing ? "text-slate-900" : "text-slate-700"
+                      }`}>
+                        SAR {bill.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </p>
+                      <p className={`text-xs transition-colors duration-300 ${
+                        isPaid ? "text-emerald-500" : isProcessing ? "text-amber-500" : "text-slate-400"
+                      }`}>
+                        {isPaid ? "Paid" : isProcessing ? "Processing" : "Pending"}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
           </div>
         ) : null}
