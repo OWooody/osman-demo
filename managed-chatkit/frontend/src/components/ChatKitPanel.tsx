@@ -36,6 +36,7 @@ export function ChatKitPanel() {
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
   const [paidBillIds, setPaidBillIds] = useState<string[]>([]);
   const [justMatchedId, setJustMatchedId] = useState<string | null>(null);
+  const [isReconcileClosing, setIsReconcileClosing] = useState(false);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -174,6 +175,15 @@ export function ChatKitPanel() {
   // Compute section totals
   const getSectionBalance = (children: Array<{ id?: string }>) => {
     return children.reduce((sum, child) => sum + getAccountBalance(child.id), 0);
+  };
+
+  // Close reconcile overlay with animation
+  const closeReconcile = () => {
+    setIsReconcileClosing(true);
+    setTimeout(() => {
+      setShowReconcile(false);
+      setIsReconcileClosing(false);
+    }, 400);
   };
 
   const options: ChatKitOptions = useMemo(
@@ -486,7 +496,9 @@ export function ChatKitPanel() {
           className="absolute inset-0 z-50 flex flex-col"
           style={{ 
             background: `linear-gradient(135deg, ${WARM_COLORS.cream} 0%, ${WARM_COLORS.sand} 100%)`,
-            animation: 'slide-up 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            animation: isReconcileClosing 
+              ? 'slide-down 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards'
+              : 'slide-up 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
           {/* Keyframe animations */}
@@ -499,6 +511,16 @@ export function ChatKitPanel() {
               100% {
                 transform: translateY(0);
                 opacity: 1;
+              }
+            }
+            @keyframes slide-down {
+              0% {
+                transform: translateY(0);
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(100%);
+                opacity: 0;
               }
             }
             @keyframes pulse-glow {
@@ -576,7 +598,7 @@ export function ChatKitPanel() {
               </div>
               
               <button
-                onClick={() => setShowReconcile(false)}
+                onClick={closeReconcile}
                 className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-black/5 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke={WARM_COLORS.gray700} viewBox="0 0 24 24" strokeWidth={2}>
@@ -797,7 +819,7 @@ export function ChatKitPanel() {
             </div>
             
             <button
-              onClick={() => setShowReconcile(false)}
+              onClick={closeReconcile}
               className="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-90"
               style={{ 
                 backgroundColor: reconciliationProgress === 100 ? WARM_COLORS.sage : WARM_COLORS.stone,
