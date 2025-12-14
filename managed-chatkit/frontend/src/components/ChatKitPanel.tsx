@@ -486,10 +486,21 @@ export function ChatKitPanel() {
           className="absolute inset-0 z-50 flex flex-col"
           style={{ 
             background: `linear-gradient(135deg, ${WARM_COLORS.cream} 0%, ${WARM_COLORS.sand} 100%)`,
+            animation: 'slide-up 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          {/* Keyframe animations for glow effect */}
+          {/* Keyframe animations */}
           <style>{`
+            @keyframes slide-up {
+              0% {
+                transform: translateY(100%);
+                opacity: 0;
+              }
+              100% {
+                transform: translateY(0);
+                opacity: 1;
+              }
+            }
             @keyframes pulse-glow {
               0% {
                 box-shadow: 0 0 0px ${withOpacity(WARM_COLORS.sage, "00")}, 0 0 0 1px ${withOpacity(WARM_COLORS.sage, "40")};
