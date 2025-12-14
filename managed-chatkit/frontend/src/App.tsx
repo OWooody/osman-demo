@@ -18,7 +18,7 @@ export default function App() {
   }, [isDark]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-end">
+    <main className="min-h-screen flex items-center justify-center">
       {/* Dark mode toggle - Warm styling */}
       <button
         onClick={() => setIsDark(!isDark)}
@@ -57,9 +57,7 @@ export default function App() {
         )}
       </button>
 
-      <div className="w-full pl-[5%]">
-        <ChatKitPanel />
-      </div>
+      <ChatKitPanel />
     </main>
   );
 }
