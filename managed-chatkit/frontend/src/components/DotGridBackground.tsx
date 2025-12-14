@@ -122,7 +122,7 @@ export function DotGridBackground() {
   }, [isDark]);
 
   return (
-    <div className="absolute inset-25">
+    <div className="absolute inset-0">
       <canvas
         ref={canvasRef}
         style={{ width: '100%', height: '100%' }}

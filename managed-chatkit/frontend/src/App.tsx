@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChatKitPanel } from "./components/ChatKitPanel";
+import { DotGridBackground } from "./components/DotGridBackground";
 
 // Warm color palette constants
 const WARM_COLORS = {
@@ -18,7 +19,12 @@ export default function App() {
   }, [isDark]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
+    <main className="min-h-screen flex items-center justify-center relative">
+      {/* Full-page dot grid background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <DotGridBackground />
+      </div>
+
       {/* Dark mode toggle - Warm styling */}
       <button
         onClick={() => setIsDark(!isDark)}
@@ -57,7 +63,10 @@ export default function App() {
         )}
       </button>
 
-      <ChatKitPanel />
+      {/* Chat panel - positioned above background */}
+      <div className="relative z-10 w-full max-w-2xl px-4">
+        <ChatKitPanel />
+      </div>
     </main>
   );
 }
