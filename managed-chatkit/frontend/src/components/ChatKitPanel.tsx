@@ -321,9 +321,9 @@ export function ChatKitPanel() {
               if (chatkit && "sendUserMessage" in chatkit && typeof chatkit.sendUserMessage === "function") {
                 try {
                   // Determine success message based on action type
-                  let successMessage = "✓ Action completed successfully";
+                  let successMessage = "Thanks 🌹";
                   if (action.type === "request.submit") {
-                    successMessage = "✓ Thanks";
+                    successMessage = "Thanks 🌹";
                     
 
                     
