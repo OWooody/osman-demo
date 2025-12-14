@@ -35,6 +35,7 @@ export function ChatKitPanel() {
   const [invoiceData, setInvoiceData] = useState<any>(false);
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
   const [paidBillIds, setPaidBillIds] = useState<string[]>([]);
+  const [justMatchedId, setJustMatchedId] = useState<string | null>(null);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -423,14 +424,24 @@ export function ChatKitPanel() {
     }
 
     setReconciledIds([]);
+    setJustMatchedId(null);
 
     let step = 0;
     const intervalId = setInterval(() => {
       const nextId = reconciliationSequence[step];
       if (nextId) {
+        // Set the "just matched" state for glow animation
+        setJustMatchedId(nextId);
+        
+        // Add to reconciled list
         setReconciledIds((prev) =>
           prev.includes(nextId) ? prev : [...prev, nextId]
         );
+        
+        // Clear the glow after animation completes
+        setTimeout(() => {
+          setJustMatchedId((current) => current === nextId ? null : current);
+        }, 800);
       }
 
       step += 1;
@@ -466,8 +477,327 @@ export function ChatKitPanel() {
   const hasContent = invoiceData || showReport || showReconcile || showBillsPaying;
 
   return (
-    <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300">
+    <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300 relative">
       <ChatKit control={chatkit.control} className="h-full w-full" />
+      
+      {/* Reconciliation Overlay */}
+      {showReconcile && (
+        <div 
+          className="absolute inset-0 z-50 flex flex-col"
+          style={{ 
+            background: `linear-gradient(135deg, ${WARM_COLORS.cream} 0%, ${WARM_COLORS.sand} 100%)`,
+          }}
+        >
+          {/* Keyframe animations for glow effect */}
+          <style>{`
+            @keyframes pulse-glow {
+              0% {
+                box-shadow: 0 0 0px ${withOpacity(WARM_COLORS.sage, "00")}, 0 0 0 1px ${withOpacity(WARM_COLORS.sage, "40")};
+              }
+              50% {
+                box-shadow: 0 0 16px ${withOpacity(WARM_COLORS.sage, "35")}, 0 0 0 2px ${WARM_COLORS.sage};
+              }
+              100% {
+                box-shadow: 0 0 12px ${withOpacity(WARM_COLORS.sage, "25")}, 0 0 0 2px ${WARM_COLORS.sage};
+              }
+            }
+            @keyframes pulse-glow-inset {
+              0% {
+                box-shadow: inset 0 0 0px ${withOpacity(WARM_COLORS.sage, "00")};
+              }
+              50% {
+                box-shadow: inset 0 0 16px ${withOpacity(WARM_COLORS.sage, "25")};
+              }
+              100% {
+                box-shadow: inset 0 0 12px ${withOpacity(WARM_COLORS.sage, "20")};
+              }
+            }
+          `}</style>
+          
+          {/* Header */}
+          <div 
+            className="flex items-center justify-between px-6 py-4 border-b"
+            style={{ borderColor: WARM_COLORS.stone }}
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: withOpacity(WARM_COLORS.sage, "20") }}
+              >
+                <svg 
+                  className="w-5 h-5" 
+                  fill="none" 
+                  stroke={WARM_COLORS.sage} 
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold" style={{ color: WARM_COLORS.gray800 }}>
+                  Bank Reconciliation
+                </h2>
+                <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
+                  Matching transactions to your chart of accounts
+                </p>
+              </div>
+            </div>
+            
+            {/* Progress indicator */}
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-medium" style={{ color: WARM_COLORS.gray700 }}>
+                  {reconciledIds.length} of {reconciliationTransactions.length} matched
+                </span>
+                <div 
+                  className="w-32 h-2 rounded-full overflow-hidden mt-1"
+                  style={{ backgroundColor: WARM_COLORS.stone }}
+                >
+                  <div 
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${reconciliationProgress}%`,
+                      backgroundColor: WARM_COLORS.sage 
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowReconcile(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-black/5 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke={WARM_COLORS.gray700} viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          {/* Main content */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Left: Bank Transactions */}
+            <div className="w-1/2 p-6 overflow-y-auto border-r" style={{ borderColor: WARM_COLORS.stone }}>
+              <h3 className="text-sm font-semibold uppercase tracking-wide mb-4" style={{ color: WARM_COLORS.gray700 }}>
+                Bank Transactions
+              </h3>
+              <div className="space-y-2">
+                {reconciliationTransactions.map((tx) => {
+                  const isReconciled = reconciledIds.includes(tx.id);
+                  const isActive = activeTransactionId === tx.id;
+                  const isJustMatched = justMatchedId === tx.id;
+                  
+                  return (
+                    <div
+                      key={tx.id}
+                      className={`p-4 rounded-xl border transition-all duration-500 ease-out ${
+                        isJustMatched ? "scale-[1.01]" : ""
+                      }`}
+                      style={{
+                        backgroundColor: isJustMatched
+                          ? withOpacity(WARM_COLORS.sage, "12")
+                          : isReconciled 
+                            ? withOpacity(WARM_COLORS.sage, "08") 
+                            : "white",
+                        borderColor: isJustMatched
+                          ? WARM_COLORS.sage
+                          : isActive 
+                            ? WARM_COLORS.sage 
+                            : isReconciled 
+                              ? withOpacity(WARM_COLORS.sage, "40")
+                              : WARM_COLORS.stone,
+                        animation: isJustMatched ? 'pulse-glow 0.8s ease-out' : undefined,
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {/* Status indicator */}
+                          <div 
+                            className="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 ease-out"
+                            style={{ 
+                              backgroundColor: isReconciled || isJustMatched
+                                ? WARM_COLORS.sage 
+                                : WARM_COLORS.stone,
+                            }}
+                          >
+                            {(isReconciled || isJustMatched) && (
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <p className="font-medium" style={{ color: WARM_COLORS.gray800 }}>
+                              {tx.vendor}
+                            </p>
+                            <p className="text-xs" style={{ color: WARM_COLORS.gray700 }}>
+                              {tx.type} • {tx.date}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <span 
+                          className="font-semibold tabular-nums"
+                          style={{ 
+                            color: tx.amount > 0 ? WARM_COLORS.sage : WARM_COLORS.gray800 
+                          }}
+                        >
+                          {tx.amount > 0 ? "+" : ""}${Math.abs(tx.amount).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Right: Chart of Accounts */}
+            <div className="w-1/2 p-6 overflow-y-auto">
+              <h3 className="text-sm font-semibold uppercase tracking-wide mb-4" style={{ color: WARM_COLORS.gray700 }}>
+                Chart of Accounts
+              </h3>
+              <div className="space-y-4">
+                {chartOfAccounts.map((section) => {
+                  const sectionBalance = getSectionBalance(section.children as Array<{ id?: string }>);
+                  
+                  return (
+                    <div 
+                      key={section.name}
+                      className="rounded-xl border overflow-hidden"
+                      style={{ 
+                        backgroundColor: "white",
+                        borderColor: WARM_COLORS.stone 
+                      }}
+                    >
+                      {/* Section header */}
+                      <div 
+                        className="px-4 py-3 flex items-center justify-between"
+                        style={{ backgroundColor: withOpacity(WARM_COLORS.primary, "08") }}
+                      >
+                        <span className="font-semibold" style={{ color: WARM_COLORS.gray800 }}>
+                          {section.name}
+                        </span>
+                        <span 
+                          className="font-semibold tabular-nums transition-all duration-300"
+                          style={{ color: sectionBalance > 0 ? WARM_COLORS.sage : WARM_COLORS.gray700 }}
+                        >
+                          ${sectionBalance.toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      {/* Account items */}
+                      <div className="divide-y" style={{ borderColor: WARM_COLORS.stone }}>
+                        {section.children.map((account) => {
+                          const accountBalance = getAccountBalance(account.id);
+                          const isLinked = account.id && reconciledIds.includes(account.id);
+                          const isJustMatched = account.id && justMatchedId === account.id;
+                          
+                          return (
+                            <div
+                              key={account.name}
+                              className="px-4 py-3 flex items-center justify-between transition-all duration-500 ease-out"
+                              style={{
+                                backgroundColor: isJustMatched
+                                  ? withOpacity(WARM_COLORS.sage, "12")
+                                  : isLinked 
+                                    ? withOpacity(WARM_COLORS.sage, "06") 
+                                    : "transparent",
+                                animation: isJustMatched ? 'pulse-glow-inset 0.8s ease-out' : undefined,
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                {(isLinked || isJustMatched) && (
+                                  <div 
+                                    className="w-4 h-4 rounded-full flex items-center justify-center transition-all duration-500 ease-out"
+                                    style={{ backgroundColor: WARM_COLORS.sage }}
+                                  >
+                                    <svg 
+                                      className="w-2.5 h-2.5 text-white" 
+                                      fill="none" 
+                                      stroke="currentColor" 
+                                      viewBox="0 0 24 24" 
+                                      strokeWidth={3}
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </div>
+                                )}
+                                <span 
+                                  className="text-sm transition-all duration-500 ease-out"
+                                  style={{ 
+                                    color: isLinked || isJustMatched ? WARM_COLORS.gray800 : WARM_COLORS.gray700,
+                                    fontWeight: isLinked || isJustMatched ? 500 : 400
+                                  }}
+                                >
+                                  {account.name}
+                                </span>
+                              </div>
+                              <span 
+                                className="text-sm tabular-nums transition-all duration-500 ease-out"
+                                style={{ 
+                                  color: accountBalance > 0 || isJustMatched ? WARM_COLORS.sage : WARM_COLORS.gray700,
+                                  fontWeight: accountBalance > 0 || isJustMatched ? 600 : 400,
+                                }}
+                              >
+                                ${accountBalance.toLocaleString()}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          
+          {/* Footer */}
+          <div 
+            className="px-6 py-4 border-t flex items-center justify-between"
+            style={{ 
+              borderColor: WARM_COLORS.stone,
+              backgroundColor: "white" 
+            }}
+          >
+            <div className="flex items-center gap-2">
+              {reconciliationProgress === 100 ? (
+                <>
+                  <svg className="w-5 h-5" fill={WARM_COLORS.sage} viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium" style={{ color: WARM_COLORS.sage }}>
+                    All transactions reconciled!
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div 
+                    className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
+                    style={{ borderColor: `${WARM_COLORS.primary} transparent ${WARM_COLORS.primary} ${WARM_COLORS.primary}` }}
+                  />
+                  <span className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
+                    Reconciling transactions...
+                  </span>
+                </>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setShowReconcile(false)}
+              className="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-90"
+              style={{ 
+                backgroundColor: reconciliationProgress === 100 ? WARM_COLORS.sage : WARM_COLORS.stone,
+                color: reconciliationProgress === 100 ? "white" : WARM_COLORS.gray700
+              }}
+            >
+              {reconciliationProgress === 100 ? "Done" : "Cancel"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
