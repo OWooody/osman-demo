@@ -95,55 +95,6 @@
   color-scheme: light;
 }
 
-:root[data-color-scheme="dark"] {
-  /* Dark mode - Warm dark tones */
-  --warm-primary: #F4A698;
-  --warm-primary-light: #F9C8BD;
-  --warm-primary-dark: #E07A5F;
-
-  --warm-sage: #A8D4BC;
-  --warm-sage-light: #C8E8D8;
-  --warm-sage-dark: #81B29A;
-
-  --warm-gold: #F9E4C4;
-  --warm-gold-light: #FCF2E0;
-  --warm-gold-dark: #F2CC8F;
-
-  /* Dark neutrals - Warm undertones */
-  --warm-cream: #1C1A17;
-  --warm-sand: #242119;
-  --warm-stone: #2D2A23;
-  --warm-gray-100: #2D2A23;
-  --warm-gray-200: #3D3830;
-  --warm-gray-300: #4D473D;
-  --warm-gray-400: #6E675C;
-  --warm-gray-500: #948C7F;
-  --warm-gray-600: #B8B0A4;
-  --warm-gray-700: #DDD7CE;
-  --warm-gray-800: #F5F0E8;
-  --warm-gray-900: #FAF7F2;
-
-  --warm-success: #A8D4B0;
-  --warm-success-light: #2A3D2D;
-  --warm-error: #F4A0A0;
-  --warm-error-light: #3D2A2A;
-  --warm-warning: #F2CC8F;
-  --warm-warning-light: #3D3520;
-
-  --background: var(--warm-cream);
-  --foreground: var(--warm-gray-800);
-
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-color-scheme]) {
-    --background: #1C1A17;
-    --foreground: #F5F0E8;
-    color-scheme: dark;
-  }
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -410,15 +361,6 @@ body {
 /* ─────────────────────────────────────────────────────────────────
    MICRO-INTERACTIONS - Enhanced User Feedback
    ───────────────────────────────────────────────────────────────── */
-
-/* Dark mode toggle icon rotation */
-.dark-toggle-icon {
-  transition: transform 0.5s var(--ease-spring);
-}
-
-.dark-toggle-icon.rotate {
-  transform: rotate(180deg);
-}
 
 /* Panel exit animation */
 @keyframes slideOutToRight {
