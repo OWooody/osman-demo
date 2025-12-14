@@ -183,7 +183,7 @@ export function ChatKitPanel() {
       theme: {
         colorScheme: "light",
         radius: 'round',  // Softer, more approachable corners
-        density: "normal",
+        density: "spacious",
         color: {
           accent: {
             primary: WARM_COLORS.primary,  // Warm coral instead of cold purple

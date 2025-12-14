@@ -64,7 +64,7 @@ export default function App() {
       </button>
 
       {/* Chat panel - positioned above background */}
-      <div className="relative z-10 w-full max-w-2xl px-4">
+      <div className="relative z-10 w-full max-w-3xl px-4">
         <ChatKitPanel />
       </div>
     </main>
