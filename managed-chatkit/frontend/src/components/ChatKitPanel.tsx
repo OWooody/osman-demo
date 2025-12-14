@@ -223,6 +223,14 @@ export function ChatKitPanel() {
         },
         tools: [
           {
+            id: 'create_theme',
+            label: 'Zatca Mode',
+            shortLabel: 'Zatca Mode',
+            placeholderOverride: 'Ask anything about Zatca',
+            icon: 'book-open',
+            pinned: true
+          },
+          {
             id: "search_docs",
             label: "Search docs",
             shortLabel: "Docs",
