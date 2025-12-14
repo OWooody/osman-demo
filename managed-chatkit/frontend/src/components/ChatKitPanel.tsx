@@ -458,13 +458,7 @@ export function ChatKitPanel() {
   const hasContent = invoiceData || showReport || showReconcile || showBillsPaying;
 
   return (
-    <div
-      className="h-[95vh] w-full rounded-3xl shadow-lg transition-all duration-300"
-      style={{
-        background: WARM_COLORS.cream,
-        boxShadow: '0 4px 24px rgba(45, 42, 37, 0.08), 0 1px 3px rgba(45, 42, 37, 0.04)',
-      }}
-    >
+    <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300">
       <ChatKit control={chatkit.control} className="h-full w-full" />
     </div>
   );
