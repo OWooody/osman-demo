@@ -231,6 +231,11 @@ export function ChatKitPanel() {
           enabled: true,
           maxCount: 5,
           maxSize: 10485760,
+          accept: {
+            'application/pdf': ['.pdf'],
+            'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
+            'text/*': ['.txt', '.csv'],
+          }
         },
         tools: [
           {
