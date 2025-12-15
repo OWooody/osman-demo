@@ -271,11 +271,6 @@ export function ChatKitPanel() {
         greeting: "",
         prompts: [
           {
-            icon: "document",
-            label: "Create an invoice for a client",
-            prompt: "Create an invoice for a client",
-          },
-          {
             icon: "check-circle",
             label: "Reconcile my bank account",
             prompt: "Reconcile my bank account",
@@ -793,7 +788,7 @@ export function ChatKitPanel() {
               </div>
               <div>
                 <h2 className="text-lg font-semibold" style={{ color: WARM_COLORS.gray800 }}>
-                  Bank Reconciliation
+                  Bookkeeping
                 </h2>
                 <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
                   Matching transactions to your chart of accounts
@@ -837,7 +832,7 @@ export function ChatKitPanel() {
             {/* Left: Bank Transactions */}
             <div className="w-1/2 p-6 overflow-y-auto border-r" style={{ borderColor: WARM_COLORS.stone }}>
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-4" style={{ color: WARM_COLORS.gray700 }}>
-                Bank Transactions
+                Invoices
               </h3>
               <div className="space-y-2">
                 {reconciliationTransactions.map((tx) => {
@@ -1036,7 +1031,7 @@ export function ChatKitPanel() {
                     style={{ borderColor: `${WARM_COLORS.primary} transparent ${WARM_COLORS.primary} ${WARM_COLORS.primary}` }}
                   />
                   <span className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
-                    Reconciling transactions...
+                    Matching transactions...
                   </span>
                 </>
               )}
