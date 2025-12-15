@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import type { ChatKitOptions } from "@openai/chatkit-react";
 import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { AnimatedNumber } from "./shared/AnimatedNumber";
 import { DotGridBackground } from "./DotGridBackground";
+import { useDropzone } from "react-dropzone";
 
 // Warm color palette - matching our design system
 const WARM_COLORS = {
@@ -28,6 +29,13 @@ function withOpacity(color: string, alpha: string): string {
   return `${color}${alpha}`;
 }
 
+// File upload types
+interface UploadingFile {
+  file: File;
+  progress: number;
+  status: 'uploading' | 'processing' | 'complete';
+}
+
 export function ChatKitPanel() {
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
@@ -37,6 +45,9 @@ export function ChatKitPanel() {
   const [paidBillIds, setPaidBillIds] = useState<string[]>([]);
   const [justMatchedId, setJustMatchedId] = useState<string | null>(null);
   const [isReconcileClosing, setIsReconcileClosing] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState<UploadingFile | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -227,16 +238,8 @@ export function ChatKitPanel() {
       },
       composer: {
         placeholder: '',
-        attachments: {
-          enabled: true,
-          maxCount: 5,
-          maxSize: 10485760,
-          accept: {
-            'application/pdf': ['.pdf'],
-            'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-            'text/*': ['.txt', '.csv'],
-          }
-        },
+        // Native attachments disabled - using react-dropzone overlay instead
+        attachments: { enabled: false },
         tools: [
           {
             id: 'create_theme',
@@ -491,9 +494,225 @@ export function ChatKitPanel() {
   // Determine if right panel should be visible
   const hasContent = invoiceData || showReport || showReconcile || showBillsPaying;
 
+  // File helpers
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const getFileIcon = (mimeType: string): string => {
+    if (mimeType.startsWith('image/')) return '🖼️';
+    if (mimeType === 'application/pdf') return '📄';
+    if (mimeType.includes('spreadsheet') || mimeType.includes('csv')) return '📊';
+    if (mimeType.includes('text')) return '📝';
+    return '📎';
+  };
+
+  // Simulate file upload
+  const simulateUpload = useCallback((file: File) => {
+    setUploadingFile({ file, progress: 0, status: 'uploading' });
+    
+    const duration = 1500 + Math.random() * 1000;
+    const start = Date.now();
+    
+    const tick = () => {
+      const progress = Math.min(((Date.now() - start) / duration) * 100, 100);
+      
+      if (progress < 100) {
+        setUploadingFile(prev => prev ? { ...prev, progress } : null);
+        requestAnimationFrame(tick);
+      } else {
+        setUploadingFile(prev => prev ? { ...prev, progress: 100, status: 'processing' } : null);
+        
+        setTimeout(() => {
+          setUploadingFile(prev => prev ? { ...prev, status: 'complete' } : null);
+          
+          setTimeout(() => {
+            const ck = chatkitRef.current;
+            console.log('📤 Sending message, chatkit ref:', ck);
+            if (ck?.sendUserMessage) {
+              const msg = `${getFileIcon(file.type)} I've uploaded multiple files, please process them. (${formatFileSize(file.size)})`;
+              console.log('📤 Message:', msg);
+              ck.sendUserMessage({ text: msg });
+            } else {
+              console.warn('⚠️ sendUserMessage not available');
+            }
+            setUploadingFile(null);
+          }, 400);
+        }, 500);
+      }
+    };
+    
+    requestAnimationFrame(tick);
+  }, []);
+
+  // Track dragging via document events (more reliable)
+  useEffect(() => {
+    const handleDragOver = (e: DragEvent) => {
+      if (e.dataTransfer?.types.includes('Files')) {
+        e.preventDefault();
+        setIsDragging(true);
+        
+        // Reset timeout on every dragover
+        if (dragTimeoutRef.current) {
+          clearTimeout(dragTimeoutRef.current);
+        }
+        // Hide after 150ms of no dragover events
+        dragTimeoutRef.current = setTimeout(() => {
+          setIsDragging(false);
+        }, 150);
+      }
+    };
+    
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      console.log('📥 Document drop detected');
+      if (dragTimeoutRef.current) {
+        clearTimeout(dragTimeoutRef.current);
+      }
+      setIsDragging(false);
+      
+      // Handle files directly here
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        console.log('📁 Files from drop:', files[0].name);
+        simulateUpload(files[0]);
+      }
+    };
+
+    document.addEventListener('dragover', handleDragOver);
+    document.addEventListener('drop', handleDrop);
+    
+    return () => {
+      document.removeEventListener('dragover', handleDragOver);
+      document.removeEventListener('drop', handleDrop);
+      if (dragTimeoutRef.current) {
+        clearTimeout(dragTimeoutRef.current);
+      }
+    };
+  }, [simulateUpload]);
+
+  // Dropzone for handling the actual drop
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (files) => {
+      console.log('🎯 Files dropped:', files);
+      if (dragTimeoutRef.current) {
+        clearTimeout(dragTimeoutRef.current);
+      }
+      setIsDragging(false);
+      if (files.length > 0) {
+        console.log('🎯 Starting upload simulation for:', files[0].name);
+        simulateUpload(files[0]);
+      }
+    },
+    noClick: true,
+    noKeyboard: true,
+  });
+
+  const showDropIndicator = isDragging && !uploadingFile;
+
   return (
     <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300 relative">
       <ChatKit control={chatkit.control} className="h-full w-full" />
+      
+      {/* Dropzone layer - shows when dragging files */}
+      {(isDragging || uploadingFile) && (
+        <div
+          {...getRootProps()}
+          className="absolute inset-0 z-40 transition-all duration-200"
+          style={{ 
+            background: showDropIndicator ? withOpacity(WARM_COLORS.primary, "10") : 'transparent',
+          }}
+        >
+        <input {...getInputProps()} />
+        
+        {/* Drop indicator */}
+        {showDropIndicator && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div 
+              className="p-8 rounded-2xl border-2 border-dashed flex flex-col items-center gap-4"
+              style={{ 
+                borderColor: WARM_COLORS.primary,
+                backgroundColor: withOpacity(WARM_COLORS.cream, "95"),
+                boxShadow: `0 8px 32px ${withOpacity(WARM_COLORS.primary, "25")}`,
+              }}
+            >
+              <div 
+                className="w-16 h-16 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: withOpacity(WARM_COLORS.primary, "15") }}
+              >
+                <svg className="w-8 h-8" fill="none" stroke={WARM_COLORS.primary} viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-lg" style={{ color: WARM_COLORS.gray800 }}>Drop to upload</p>
+                <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>PDF, images, or documents</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Upload progress */}
+        {uploadingFile && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ backgroundColor: withOpacity(WARM_COLORS.gray800, "25"), backdropFilter: 'blur(2px)' }}
+          >
+            <style>{`
+              @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+              @keyframes pop { 0% { transform: scale(0); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
+            `}</style>
+            <div 
+              className="p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 min-w-[280px]"
+              style={{ backgroundColor: WARM_COLORS.cream }}
+            >
+              <div 
+                className="w-16 h-16 rounded-xl flex items-center justify-center"
+                style={{ 
+                  backgroundColor: uploadingFile.status === 'complete' 
+                    ? withOpacity(WARM_COLORS.sage, "20") 
+                    : withOpacity(WARM_COLORS.primary, "15"),
+                  animation: uploadingFile.status === 'uploading' ? 'bounce 1s ease-in-out infinite' : undefined,
+                }}
+              >
+                {uploadingFile.status === 'complete' ? (
+                  <svg className="w-8 h-8" fill="none" stroke={WARM_COLORS.sage} viewBox="0 0 24 24" strokeWidth={2.5} style={{ animation: 'pop 0.3s ease-out' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-8 h-8" fill="none" stroke={WARM_COLORS.primary} viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                )}
+              </div>
+              
+              <div className="text-center">
+                <p className="font-medium truncate max-w-[220px]" style={{ color: WARM_COLORS.gray800 }}>{uploadingFile.file.name}</p>
+                <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>{formatFileSize(uploadingFile.file.size)}</p>
+              </div>
+              
+              {uploadingFile.status !== 'complete' ? (
+                <div className="w-full">
+                  <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: WARM_COLORS.stone }}>
+                    <div 
+                      className="h-full rounded-full transition-all duration-100"
+                      style={{ width: `${uploadingFile.progress}%`, backgroundColor: WARM_COLORS.primary }}
+                    />
+                  </div>
+                  <p className="text-sm mt-2 text-center" style={{ color: WARM_COLORS.gray700 }}>
+                    {uploadingFile.status === 'uploading' ? `${Math.round(uploadingFile.progress)}%` : 'Processing...'}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm font-medium" style={{ color: WARM_COLORS.sage }}>Upload complete!</p>
+              )}
+            </div>
+          </div>
+        )}
+        </div>
+      )}
       
       {/* Reconciliation Overlay */}
       {showReconcile && (
