@@ -12,7 +12,7 @@ interface AnimatedNumberProps {
 
 /**
  * AnimatedNumber - A count-up/count-down animation component
- * Uses spring-based easing for a natural, organic feel
+ * Uses ease-out cubic for smooth deceleration without overshoot
  */
 export function AnimatedNumber({
   value,
@@ -47,15 +47,9 @@ export function AnimatedNumber({
     // Skip animation if no change
     if (difference === 0) return;
 
-    // Spring easing function - matches --ease-spring
-    const springEase = (t: number): number => {
-      // cubic-bezier(0.34, 1.56, 0.64, 1) approximation
-      const c4 = (2 * Math.PI) / 3;
-      return t === 0
-        ? 0
-        : t === 1
-        ? 1
-        : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+    // Smooth ease-out cubic - decelerates without overshoot
+    const easeOutCubic = (t: number): number => {
+      return 1 - Math.pow(1 - t, 3);
     };
 
     const animate = (currentTime: number) => {
@@ -65,7 +59,7 @@ export function AnimatedNumber({
 
       const elapsed = currentTime - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = springEase(progress);
+      const easedProgress = easeOutCubic(progress);
 
       const currentValue = startValue + difference * easedProgress;
       setDisplayValue(currentValue);
