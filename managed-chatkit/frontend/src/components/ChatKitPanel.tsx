@@ -71,6 +71,7 @@ const i18n = {
 
 export function ChatKitPanel() {
   const [language, setLanguage] = useState<Language>('ar');
+  const [hasStartedChat, setHasStartedChat] = useState(false);
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
   const [showBillsPaying, setShowBillsPaying] = useState(false);
@@ -472,6 +473,10 @@ export function ChatKitPanel() {
           }
         },
       },
+      // Hide language toggle after first message
+      onResponseStart: () => {
+        setHasStartedChat(true);
+      },
     }),
     [getClientSecret, language, t]
   );
@@ -660,21 +665,23 @@ export function ChatKitPanel() {
     <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300 relative">
       <ChatKit control={chatkit.control} className="h-full w-full" />
       
-      {/* Language Toggle Button */}
-      <button
-        onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
-        className="absolute top-4 left-4 z-30 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95"
-        style={{
-          backgroundColor: WARM_COLORS.cream,
-          borderColor: WARM_COLORS.stone,
-          color: WARM_COLORS.gray800,
-          boxShadow: `0 2px 8px ${withOpacity(WARM_COLORS.gray800, "10")}`,
-        }}
-        title={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-      >
-        <span className="text-lg">{language === 'ar' ? '🇬🇧' : '🇸🇦'}</span>
-        <span className="text-sm font-medium">{language === 'ar' ? 'EN' : 'عربي'}</span>
-      </button>
+      {/* Language Toggle Button - hidden after first message */}
+      {!hasStartedChat && (
+        <button
+          onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+          className="absolute top-4 left-4 z-30 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: WARM_COLORS.cream,
+            borderColor: WARM_COLORS.stone,
+            color: WARM_COLORS.gray800,
+            boxShadow: `0 2px 8px ${withOpacity(WARM_COLORS.gray800, "10")}`,
+          }}
+          title={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+        >
+          <span className="text-lg">{language === 'ar' ? '🇬🇧' : '🇸🇦'}</span>
+          <span className="text-sm font-medium">{language === 'ar' ? 'EN' : 'عربي'}</span>
+        </button>
+      )}
       
       {/* Dropzone layer - shows when dragging files */}
       {(isDragging || uploadingFile) && (
