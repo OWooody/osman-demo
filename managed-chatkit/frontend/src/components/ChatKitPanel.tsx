@@ -53,6 +53,19 @@ const i18n = {
       report: { label: 'إنشاء تقرير الأرباح والخسائر', prompt: 'إنشاء تقرير الأرباح والخسائر' },
     },
     fontFamily: '"IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif',
+    // Bookkeeping overlay translations
+    bookkeeping: {
+      title: 'مسك الدفاتر',
+      subtitle: 'مطابقة المعاملات مع دليل الحسابات',
+      invoicesTitle: 'الفواتير',
+      chartTitle: 'دليل الحسابات',
+      matched: 'تمت المطابقة',
+      of: 'من',
+      allReconciled: 'تمت مطابقة جميع المعاملات!',
+      matching: 'جارٍ المطابقة...',
+      done: 'تم',
+      cancel: 'إلغاء',
+    },
   },
   en: {
     placeholder: 'Type your message...',
@@ -66,6 +79,19 @@ const i18n = {
       report: { label: 'Generate a profit and loss report', prompt: 'Generate a profit and loss report' },
     },
     fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+    // Bookkeeping overlay translations
+    bookkeeping: {
+      title: 'Bookkeeping',
+      subtitle: 'Matching transactions to your chart of accounts',
+      invoicesTitle: 'Invoices',
+      chartTitle: 'Chart of Accounts',
+      matched: 'matched',
+      of: 'of',
+      allReconciled: 'All transactions reconciled!',
+      matching: 'Matching transactions...',
+      done: 'Done',
+      cancel: 'Cancel',
+    },
   },
 };
 
@@ -785,8 +811,13 @@ export function ChatKitPanel() {
       {showReconcile && (
         <div 
           className="absolute inset-0 z-50 flex flex-col"
+          lang={language}
+          dir={language === 'ar' ? 'rtl' : 'ltr'}
           style={{ 
             background: `linear-gradient(135deg, ${WARM_COLORS.cream} 0%, ${WARM_COLORS.sand} 100%)`,
+            fontFamily: language === 'ar' 
+              ? '"IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif'
+              : '"Plus Jakarta Sans", system-ui, sans-serif',
             animation: isReconcileClosing 
               ? 'slide-down 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards'
               : 'slide-up 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -860,10 +891,10 @@ export function ChatKitPanel() {
               </div>
               <div>
                 <h2 className="text-lg font-semibold" style={{ color: WARM_COLORS.gray800 }}>
-                  Bookkeeping
+                  {t.bookkeeping.title}
                 </h2>
                 <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
-                  Matching transactions to your chart of accounts
+                  {t.bookkeeping.subtitle}
                 </p>
               </div>
             </div>
@@ -872,7 +903,7 @@ export function ChatKitPanel() {
             <div className="flex items-center gap-4">
               <div className="flex flex-col items-end">
                 <span className="text-sm font-medium" style={{ color: WARM_COLORS.gray700 }}>
-                  {reconciledIds.length} of {reconciliationTransactions.length} matched
+                  {reconciledIds.length} {t.bookkeeping.of} {reconciliationTransactions.length} {t.bookkeeping.matched}
                 </span>
                 <div 
                   className="w-32 h-2 rounded-full overflow-hidden mt-1"
@@ -904,7 +935,7 @@ export function ChatKitPanel() {
             {/* Left: Bank Transactions */}
             <div className="w-1/2 p-6 overflow-y-auto border-r" style={{ borderColor: WARM_COLORS.stone }}>
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-4" style={{ color: WARM_COLORS.gray700 }}>
-                Invoices
+                {t.bookkeeping.invoicesTitle}
               </h3>
               <div className="space-y-2">
                 {reconciliationTransactions.map((tx) => {
@@ -980,7 +1011,7 @@ export function ChatKitPanel() {
             {/* Right: Chart of Accounts */}
             <div className="w-1/2 p-6 overflow-y-auto">
               <h3 className="text-sm font-semibold uppercase tracking-wide mb-4" style={{ color: WARM_COLORS.gray700 }}>
-                Chart of Accounts
+                {t.bookkeeping.chartTitle}
               </h3>
               <div className="space-y-4">
                 {chartOfAccounts.map((section) => {
@@ -1093,7 +1124,7 @@ export function ChatKitPanel() {
                     <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                   </svg>
                   <span className="font-medium" style={{ color: WARM_COLORS.sage }}>
-                    All transactions reconciled!
+                    {t.bookkeeping.allReconciled}
                   </span>
                 </>
               ) : (
@@ -1103,7 +1134,7 @@ export function ChatKitPanel() {
                     style={{ borderColor: `${WARM_COLORS.primary} transparent ${WARM_COLORS.primary} ${WARM_COLORS.primary}` }}
                   />
                   <span className="text-sm" style={{ color: WARM_COLORS.gray700 }}>
-                    Matching transactions...
+                    {t.bookkeeping.matching}
                   </span>
                 </>
               )}
@@ -1117,7 +1148,7 @@ export function ChatKitPanel() {
                 color: reconciliationProgress === 100 ? "white" : WARM_COLORS.gray700
               }}
             >
-              {reconciliationProgress === 100 ? "Done" : "Cancel"}
+              {reconciliationProgress === 100 ? t.bookkeeping.done : t.bookkeeping.cancel}
             </button>
           </div>
         </div>
