@@ -66,6 +66,13 @@ const i18n = {
       done: 'تم',
       cancel: 'إلغاء',
     },
+    // Upload/dropzone translations
+    upload: {
+      dropToUpload: 'ارفع وازهل',
+      fileTypes: 'ملفات PDF أو صور أو مستندات',
+      processing: 'جارٍ المعالجة...',
+      complete: 'اكتمل الرفع!',
+    },
   },
   en: {
     placeholder: 'Type your message...',
@@ -91,6 +98,13 @@ const i18n = {
       matching: 'Matching transactions...',
       done: 'Done',
       cancel: 'Cancel',
+    },
+    // Upload/dropzone translations
+    upload: {
+      dropToUpload: 'Drop to upload',
+      fileTypes: 'PDF, images, or documents',
+      processing: 'Processing...',
+      complete: 'Upload complete!',
     },
   },
 };
@@ -714,8 +728,13 @@ export function ChatKitPanel() {
         <div
           {...getRootProps()}
           className="absolute inset-0 z-40 transition-all duration-200"
+          lang={language}
+          dir={language === 'ar' ? 'rtl' : 'ltr'}
           style={{ 
             background: showDropIndicator ? withOpacity(WARM_COLORS.primary, "10") : 'transparent',
+            fontFamily: language === 'ar' 
+              ? '"IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif'
+              : '"Plus Jakarta Sans", system-ui, sans-serif',
           }}
         >
         <input {...getInputProps()} />
@@ -740,8 +759,8 @@ export function ChatKitPanel() {
                 </svg>
               </div>
               <div className="text-center">
-                <p className="font-semibold text-lg" style={{ color: WARM_COLORS.gray800 }}>Drop to upload</p>
-                <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>PDF, images, or documents</p>
+                <p className="font-semibold text-lg" style={{ color: WARM_COLORS.gray800 }}>{t.upload.dropToUpload}</p>
+                <p className="text-sm" style={{ color: WARM_COLORS.gray700 }}>{t.upload.fileTypes}</p>
               </div>
             </div>
           </div>
@@ -795,11 +814,11 @@ export function ChatKitPanel() {
                     />
                   </div>
                   <p className="text-sm mt-2 text-center" style={{ color: WARM_COLORS.gray700 }}>
-                    {uploadingFile.status === 'uploading' ? `${Math.round(uploadingFile.progress)}%` : 'Processing...'}
+                    {uploadingFile.status === 'uploading' ? `${Math.round(uploadingFile.progress)}%` : t.upload.processing}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm font-medium" style={{ color: WARM_COLORS.sage }}>Upload complete!</p>
+                <p className="text-sm font-medium" style={{ color: WARM_COLORS.sage }}>{t.upload.complete}</p>
               )}
             </div>
           </div>
