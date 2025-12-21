@@ -36,7 +36,41 @@ interface UploadingFile {
   status: 'uploading' | 'processing' | 'complete';
 }
 
+// Language type
+type Language = 'ar' | 'en';
+
+// i18n content
+const i18n = {
+  ar: {
+    placeholder: 'اكتب رسالتك هنا...',
+    greeting: 'كيف يمكنني مساعدتك اليوم؟',
+    zatcaTool: { label: 'وضع زاتكا', shortLabel: 'زاتكا', placeholder: 'اسأل أي شيء عن زاتكا' },
+    searchTool: { label: 'البحث في المستندات', shortLabel: 'المستندات', placeholder: 'البحث في الوثائق' },
+    reportTool: { label: 'إنشاء تقرير', shortLabel: 'تقرير', placeholder: 'إنشاء تقرير الأرباح والخسائر' },
+    prompts: {
+      reconcile: { label: 'مطابقة حسابي البنكي', prompt: 'مطابقة حسابي البنكي' },
+      bills: { label: 'تتبع فواتيري ومواعيد استحقاقها', prompt: 'تتبع فواتيري ومواعيد استحقاقها' },
+      report: { label: 'إنشاء تقرير الأرباح والخسائر', prompt: 'إنشاء تقرير الأرباح والخسائر' },
+    },
+    fontFamily: '"IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif',
+  },
+  en: {
+    placeholder: 'Type your message...',
+    greeting: 'How can I help you today?',
+    zatcaTool: { label: 'Zatca Mode', shortLabel: 'Zatca', placeholder: 'Ask anything about Zatca' },
+    searchTool: { label: 'Search docs', shortLabel: 'Docs', placeholder: 'Search documentation' },
+    reportTool: { label: 'Generate report', shortLabel: 'Report', placeholder: 'Generate profit and loss report' },
+    prompts: {
+      reconcile: { label: 'Reconcile my bank account', prompt: 'Reconcile my bank account' },
+      bills: { label: 'Track my bills and due dates', prompt: 'Track my bills and due dates' },
+      report: { label: 'Generate a profit and loss report', prompt: 'Generate a profit and loss report' },
+    },
+    fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+  },
+};
+
 export function ChatKitPanel() {
+  const [language, setLanguage] = useState<Language>('ar');
   const [showReport, setShowReport] = useState(false); // TODO: set back to false when done
   const [showReconcile, setShowReconcile] = useState(false);
   const [showBillsPaying, setShowBillsPaying] = useState(false);
@@ -48,6 +82,8 @@ export function ChatKitPanel() {
   const [uploadingFile, setUploadingFile] = useState<UploadingFile | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const t = i18n[language];
 
   const getClientSecret = useMemo(
     () => createClientSecretFetcher(workflowId),
@@ -202,23 +238,37 @@ export function ChatKitPanel() {
       api: {
         getClientSecret,
       },
+      locale: language,
       theme: {
         colorScheme: "light",
-        radius: 'round',  // Softer, more approachable corners
+        radius: 'round',
         density: "spacious",
         color: {
           accent: {
-            primary: WARM_COLORS.primary,  // Warm coral instead of cold purple
+            primary: WARM_COLORS.primary,
             level: 1,
           },
         },
         typography: {
           baseSize: 16,
-          fontFamily:
-            '"Plus Jakarta Sans", "OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+          fontFamily: t.fontFamily,
           fontFamilyMono:
             '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
           fontSources: [
+            {
+              family: "IBM Plex Sans Arabic",
+              src: "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans-arabic@latest/arabic-400-normal.woff2",
+              weight: 400,
+              style: "normal",
+              display: "swap",
+            },
+            {
+              family: "IBM Plex Sans Arabic",
+              src: "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans-arabic@latest/arabic-600-normal.woff2",
+              weight: 600,
+              style: "normal",
+              display: "swap",
+            },
             {
               family: "Plus Jakarta Sans",
               src: "https://cdn.jsdelivr.net/fontsource/fonts/plus-jakarta-sans@latest/latin-400-normal.woff2",
@@ -237,53 +287,52 @@ export function ChatKitPanel() {
         },
       },
       composer: {
-        placeholder: '',
-        // Native attachments disabled - using react-dropzone overlay instead
+        placeholder: t.placeholder,
         attachments: { enabled: false },
         tools: [
           {
             id: 'create_theme',
-            label: 'Zatca Mode',
-            shortLabel: 'Zatca Mode',
-            placeholderOverride: 'Ask anything about Zatca',
+            label: t.zatcaTool.label,
+            shortLabel: t.zatcaTool.shortLabel,
+            placeholderOverride: t.zatcaTool.placeholder,
             icon: 'book-open',
             pinned: true
           },
           {
             id: "search_docs",
-            label: "Search docs",
-            shortLabel: "Docs",
-            placeholderOverride: "Search documentation",
+            label: t.searchTool.label,
+            shortLabel: t.searchTool.shortLabel,
+            placeholderOverride: t.searchTool.placeholder,
             icon: "book-open",
             pinned: false,
           },
           {
             id: "generate_report",
-            label: "Generate report",
-            shortLabel: "Report",
-            placeholderOverride: "Generate profit and loss report",
+            label: t.reportTool.label,
+            shortLabel: t.reportTool.shortLabel,
+            placeholderOverride: t.reportTool.placeholder,
             icon: "chart",
             pinned: false,
           },
         ],
       },
       startScreen: {
-        greeting: "",
+        greeting: t.greeting,
         prompts: [
           {
             icon: "check-circle",
-            label: "Reconcile my bank account",
-            prompt: "Reconcile my bank account",
+            label: t.prompts.reconcile.label,
+            prompt: t.prompts.reconcile.prompt,
           },
           {
             icon: "calendar",
-            label: "Track my bills and due dates",
-            prompt: "Track my bills and due dates",
+            label: t.prompts.bills.label,
+            prompt: t.prompts.bills.prompt,
           },
           {
             icon: "chart",
-            label: "Generate a profit and loss report",
-            prompt: "Generate a profit and loss report",
+            label: t.prompts.report.label,
+            prompt: t.prompts.report.prompt,
           },
         ],
       },
@@ -424,7 +473,7 @@ export function ChatKitPanel() {
         },
       },
     }),
-    [getClientSecret]
+    [getClientSecret, language, t]
   );
 
   const chatkit = useChatKit(options);
@@ -610,6 +659,22 @@ export function ChatKitPanel() {
   return (
     <div className="h-[95vh] w-full rounded-3xl shadow-lg overflow-hidden transition-all duration-300 relative">
       <ChatKit control={chatkit.control} className="h-full w-full" />
+      
+      {/* Language Toggle Button */}
+      <button
+        onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+        className="absolute top-4 left-4 z-30 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95"
+        style={{
+          backgroundColor: WARM_COLORS.cream,
+          borderColor: WARM_COLORS.stone,
+          color: WARM_COLORS.gray800,
+          boxShadow: `0 2px 8px ${withOpacity(WARM_COLORS.gray800, "10")}`,
+        }}
+        title={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+      >
+        <span className="text-lg">{language === 'ar' ? '🇬🇧' : '🇸🇦'}</span>
+        <span className="text-sm font-medium">{language === 'ar' ? 'EN' : 'عربي'}</span>
+      </button>
       
       {/* Dropzone layer - shows when dragging files */}
       {(isDragging || uploadingFile) && (
