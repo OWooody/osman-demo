@@ -55,7 +55,7 @@ const i18n = {
     fontFamily: '"IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif',
     // Bookkeeping overlay translations
     bookkeeping: {
-      title: 'مسك الدفاتر',
+      title: 'مطابقة الدفاتر',
       subtitle: 'مطابقة المعاملات مع دليل الحسابات',
       invoicesTitle: 'الفواتير',
       chartTitle: 'دليل الحسابات',
@@ -72,6 +72,7 @@ const i18n = {
       fileTypes: 'ملفات PDF أو صور أو مستندات',
       processing: 'جارٍ المعالجة...',
       complete: 'اكتمل الرفع!',
+      uploadedMessage: 'رفعت ملفات متعددة، يرجى معالجتها.',
     },
   },
   en: {
@@ -105,6 +106,7 @@ const i18n = {
       fileTypes: 'PDF, images, or documents',
       processing: 'Processing...',
       complete: 'Upload complete!',
+      uploadedMessage: "I've uploaded multiple files, please process them.",
     },
   },
 };
@@ -621,7 +623,7 @@ export function ChatKitPanel() {
             const ck = chatkitRef.current;
             console.log('📤 Sending message, chatkit ref:', ck);
             if (ck?.sendUserMessage) {
-              const msg = `${getFileIcon(file.type)} I've uploaded multiple files, please process them. (${formatFileSize(file.size)})`;
+              const msg = `${getFileIcon(file.type)} ${t.upload.uploadedMessage} (${formatFileSize(file.size)})`;
               console.log('📤 Message:', msg);
               ck.sendUserMessage({ text: msg });
             } else {
